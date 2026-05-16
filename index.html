@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Functions Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--border:rgba(255,255,255,0.08);
+  --blue:#5b8dee;--purple:#9b6dff;--pink:#ff6b9d;--green:#4ecdc4;
+  --orange:#ff8a50;--red:#ff5252;--yellow:#ffd740;--cyan:#40e0d0;--gold:#ffab40;
+  --text:#f5f5f7;--text2:#b0b8d1;--text3:#6b7394;
+  --font:'Nunito',sans-serif;--mono:'Fira Code',monospace;
+  --r:20px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:18px;line-height:1.75;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(91,141,238,0.07),transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(155,109,255,0.05),transparent 60%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--blue);border-radius:4px}
+.hidden{display:none!important}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+.wrap-wide{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border:none;border-radius:60px;font-family:var(--font);font-weight:800;font-size:17px;cursor:pointer;transition:all .3s;letter-spacing:0.3px}
+.btn:hover{transform:translateY(-3px)}.btn:active{transform:scale(0.97)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 6px 25px rgba(91,141,238,0.3)}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--cyan));color:#0a2a27;box-shadow:0 6px 25px rgba(78,205,196,0.3)}
+.btn-gold{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#2a1a00;box-shadow:0 6px 25px rgba(255,215,64,0.3)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 6px 25px rgba(255,107,157,0.3)}
+.btn-ghost{background:rgba(91,141,238,0.1);color:var(--blue);border:2px solid rgba(91,141,238,0.25)}
+.btn-ghost:hover{background:rgba(91,141,238,0.2)}
+.btn-sm{padding:11px 24px;font-size:15px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+
+/* Nav */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(15,15,26,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.topnav .wrap-wide{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:900;font-size:22px;cursor:pointer;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.nav-pills{display:flex;align-items:center;gap:14px}
+.pill{background:var(--card);border:1px solid var(--border);border-radius:50px;padding:8px 18px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.pill .pv{color:var(--yellow);font-family:var(--mono)}
+.xbar{width:140px;height:7px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden}
+.xbar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));border-radius:10px;transition:width .8s ease}
+
+/* ═══ PHASES ═══ */
+.phase{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
+.phase-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:48px;max-width:700px;width:100%;text-align:center;animation:fadeUp .6s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.phase-card h1{font-weight:900;font-size:36px;margin-bottom:16px;line-height:1.2}
+.phase-card h2{font-weight:800;font-size:28px;margin-bottom:14px}
+.phase-card p{color:var(--text2);font-size:19px;margin-bottom:24px;line-height:1.8}
+
+/* Warm-up challenge cards */
+.challenge{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:44px;max-width:750px;width:100%;animation:fadeUp .5s ease}
+.challenge h2{font-weight:800;font-size:26px;margin-bottom:8px}
+.challenge .ch-num{font-size:14px;font-weight:700;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.challenge p{color:var(--text2);font-size:18px;margin-bottom:20px;line-height:1.8}
+.ch-options{display:flex;flex-direction:column;gap:12px;margin:20px 0}
+.ch-opt{background:rgba(255,255,255,0.03);border:2px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px 24px;cursor:pointer;transition:all .3s;font-size:17px;font-weight:600;text-align:left}
+.ch-opt:hover{border-color:var(--blue);background:rgba(91,141,238,0.06);transform:translateX(4px)}
+.ch-opt.picked{border-color:var(--blue);background:rgba(91,141,238,0.1)}
+.ch-opt.correct{border-color:var(--green)!important;background:rgba(78,205,196,0.1)!important}
+.ch-opt.wrong{border-color:var(--red)!important;background:rgba(255,82,82,0.06)!important}
+.ch-opt.done{pointer-events:none}
+.ch-fb{margin-top:16px;padding:20px;border-radius:14px;font-size:17px;line-height:1.7;animation:fadeUp .3s ease}
+.ch-fb.ok{background:rgba(78,205,196,0.08);border:2px solid rgba(78,205,196,0.2)}
+.ch-fb.no{background:rgba(255,82,82,0.06);border:2px solid rgba(255,82,82,0.15)}
+
+/* Code */
+.code{background:#0a0a1a;border:2px solid rgba(91,141,238,0.12);border-radius:16px;padding:24px 28px;font-family:var(--mono);font-size:17px;line-height:2.2;overflow-x:auto;margin:16px 0;text-align:left}
+.code .ln{color:var(--text3);margin-right:20px;user-select:none;min-width:24px;display:inline-block;text-align:right;font-size:14px}
+.code .line{display:block;padding:2px 28px;margin:0 -28px;border-left:4px solid transparent;transition:all .3s}
+.code .line.hl{background:rgba(91,141,238,0.1);border-left-color:var(--blue)}
+.code .line.hlg{background:rgba(78,205,196,0.08);border-left-color:var(--green)}
+.kw{color:#c792ea}.fn{color:#82aaff}.st{color:#c3e88d}.cm{color:#546e7a;font-style:italic}.nm{color:#f78c6c}.bi{color:#89ddff}.pm{color:#ffcb6b}
+
+/* Progress dots */
+.dots{display:flex;gap:8px;justify-content:center;margin-bottom:28px}
+.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all .3s}
+.dot.active{background:var(--blue);box-shadow:0 0 12px rgba(91,141,238,0.4)}
+.dot.done{background:var(--green)}
+
+/* Results */
+.result-bar{height:12px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,0.06);margin:8px 0 20px}
+.result-fill{height:100%;border-radius:10px;transition:width 1s ease}
+.result-fill.high{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.result-fill.med{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.result-fill.low{background:linear-gradient(90deg,var(--orange),var(--red))}
+
+/* Prereq cards */
+.prereq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin:20px 0}
+.pq-card{background:rgba(255,255,255,0.03);border:2px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;transition:all .3s;text-align:center}
+.pq-card:hover{border-color:var(--blue);transform:translateY(-3px)}
+.pq-card.mastered{border-color:var(--green);background:rgba(78,205,196,0.06)}
+.pq-card .pq-icon{font-size:32px;margin-bottom:8px;display:block}
+.pq-card h4{font-weight:700;font-size:16px}
+.pq-card p{font-size:13px;color:var(--text3);margin-top:4px}
+
+/* Teach blocks */
+.teach{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:36px;margin:28px 0;position:relative;overflow:hidden;font-size:18px}
+.teach::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.teach.blue::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.teach.purple::before{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.teach.green::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.teach.orange::before{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+.teach.red::before{background:linear-gradient(90deg,var(--red),var(--pink))}
+.teach.gold::before{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.teach.pink::before{background:linear-gradient(90deg,var(--pink),var(--purple))}
+.teach h3{font-weight:800;font-size:24px;margin-bottom:14px}
+.teach p{color:var(--text2);margin-bottom:14px;font-size:18px;line-height:1.8}
+.teach strong{color:var(--text)}
+
+/* Station grid */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;padding-bottom:80px}
+.sc{position:relative;border-radius:var(--r);padding:32px;overflow:hidden;cursor:pointer;transition:all .4s;border:2px solid transparent}
+.sc:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.sc.locked{opacity:.35;cursor:not-allowed;filter:grayscale(0.5)}.sc.locked:hover{transform:none;box-shadow:none}
+.sc[data-i="0"]{background:linear-gradient(135deg,#1a237e,#283593)}
+.sc[data-i="1"]{background:linear-gradient(135deg,#4a148c,#6a1b9a)}
+.sc[data-i="2"]{background:linear-gradient(135deg,#880e4f,#ad1457)}
+.sc[data-i="3"]{background:linear-gradient(135deg,#004d40,#00695c)}
+.sc[data-i="4"]{background:linear-gradient(135deg,#1b5e20,#2e7d32)}
+.sc[data-i="5"]{background:linear-gradient(135deg,#e65100,#bf360c)}
+.sc[data-i="6"]{background:linear-gradient(135deg,#01579b,#0277bd)}
+.sc[data-i="7"]{background:linear-gradient(135deg,#f57f17,#f9a825)}
+.sc[data-i="8"]{background:linear-gradient(135deg,#b71c1c,#c62828)}
+.sc[data-i="9"]{background:linear-gradient(135deg,#1a237e,#0d47a1)}
+.sc[data-i="10"]{background:linear-gradient(135deg,#e65100,#ff6f00)}
+.sc[data-i="11"]{background:linear-gradient(135deg,#4a148c,#7b1fa2)}
+.sc-icon{font-size:44px;margin-bottom:16px;display:block}
+.sc-num{font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:0.7;margin-bottom:6px}
+.sc h3{font-weight:800;font-size:22px;margin-bottom:8px}
+.sc p{font-size:16px;opacity:0.85;margin-bottom:20px}
+.sc-bot{display:flex;align-items:center;justify-content:space-between}
+.sc-st{font-size:13px;font-weight:700;padding:6px 16px;border-radius:50px}
+.sc-st.done{background:rgba(78,205,196,0.25);color:var(--green)}
+.sc-st.open{background:rgba(255,255,255,0.15);color:#fff}
+.sc-st.lock{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4)}
+.sc-ent{font-size:14px;font-weight:700;opacity:0;transition:opacity .3s;color:#fff}.sc:hover .sc-ent{opacity:1}
+
+/* Out, Quiz, etc - same as before */
+.out{background:#0a0a1a;border:2px solid rgba(78,205,196,0.2);border-radius:16px;padding:20px 24px;font-family:var(--mono);font-size:16px;min-height:60px;color:var(--green);margin:16px 0}
+.out-label{font-family:var(--font);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.quiz{margin:32px 0;background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:36px}
+.quiz-q{font-weight:700;font-size:20px;margin-bottom:20px;line-height:1.6}
+.qo{background:rgba(255,255,255,0.03);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px 24px;cursor:pointer;transition:all .3s;font-size:17px;font-weight:500;margin-bottom:12px}
+.qo:hover{border-color:var(--blue);background:rgba(91,141,238,0.06)}
+.qo.ok{border-color:var(--green)!important;background:rgba(78,205,196,0.1)!important}
+.qo.no{border-color:var(--red)!important;background:rgba(255,82,82,0.06)!important}
+.qo.dn{pointer-events:none}
+.qfb{margin-top:16px;padding:20px;border-radius:14px;font-size:17px;line-height:1.8;animation:fadeUp .3s ease}
+.qfb.qok{background:rgba(78,205,196,0.08);border:2px solid rgba(78,205,196,0.2)}
+.qfb.qno{background:rgba(255,82,82,0.06);border:2px solid rgba(255,82,82,0.15)}
+.strat{margin-top:16px;padding:20px;background:rgba(255,215,64,0.05);border:2px solid rgba(255,215,64,0.12);border-radius:14px;font-size:16px}
+.strat b{color:var(--yellow);font-size:17px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:768px){.two{grid-template-columns:1fr}}
+.ii{background:rgba(91,141,238,0.08);border:2px solid var(--blue);border-radius:10px;padding:10px 16px;color:var(--text);font-family:var(--mono);font-size:16px;outline:none}
+.ii.iok{border-color:var(--green)!important}.ii.ino{border-color:var(--red)!important}
+.is{background:rgba(91,141,238,0.08);border:2px solid var(--blue);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:15px;cursor:pointer}
+.is option{background:var(--card);color:var(--text)}
+.conveyor{background:rgba(255,255,255,0.02);border:2px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:16px}
+.cv{padding:10px 20px;background:rgba(78,205,196,0.12);border:2px solid var(--green);border-radius:10px;color:var(--green);font-weight:700}
+.cva{color:var(--yellow);font-size:24px;font-weight:900}
+
+.badge-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:999;background:var(--card2);border:3px solid var(--yellow);border-radius:28px;padding:52px 64px;text-align:center;box-shadow:0 0 100px rgba(255,215,64,0.25);transition:transform .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.badge-pop.show{transform:translate(-50%,-50%) scale(1)}
+.confetti{position:fixed;border-radius:3px;z-index:9999;pointer-events:none;animation:cfall 3s ease-in forwards}
+@keyframes cfall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(900deg);opacity:0}}
+.toast{position:fixed;bottom:100px;right:32px;z-index:500;padding:14px 28px;border-radius:60px;font-weight:800;font-size:17px;animation:toastUp 1.8s ease forwards;pointer-events:none;color:var(--yellow);background:rgba(255,215,64,0.12);border:2px solid rgba(255,215,64,0.3)}
+@keyframes toastUp{0%{opacity:0;transform:translateY(10px)}15%{opacity:1;transform:translateY(0)}75%{opacity:1}100%{opacity:0;transform:translateY(-20px)}}
+.xp-float{position:fixed;bottom:24px;right:24px;z-index:50}
+.xp-card{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:14px 24px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.xp-val{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--yellow)}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--text2);font-size:16px;font-weight:600;cursor:pointer;margin-bottom:28px}
+.back-link:hover{color:var(--blue)}
+
+.foot{text-align:center;padding:60px 0;border-top:1px solid var(--border);font-size:16px;color:var(--text3);z-index:2;position:relative}
+.foot span{color:var(--yellow);font-weight:700}
+@media(max-width:640px){.sgrid{grid-template-columns:1fr}.wrap,.wrap-wide{padding:0 16px}.phase-card,.challenge{padding:28px}}
+</style>
+</head>
+<body>
+
+<div class="badge-pop" id="bp"><span style="font-size:72px;display:block;margin-bottom:16px" id="bpI">🏆</span><div style="font-weight:900;font-size:28px;color:var(--yellow)" id="bpT">Badge!</div><div style="color:var(--text2);font-size:17px;margin-top:8px">You unlocked a new badge!</div></div>
+
+<nav class="topnav" id="topnav"><div class="wrap-wide">
+  <div class="logo" onclick="goHome()"><div class="logo-icon">⚗️</div> Function Lab</div>
+  <div class="nav-pills">
+    <div class="pill">⭐ <span class="pv" id="nXP">0</span> XP</div>
+    <div class="pill">🏆 <span class="pv" id="nB">0</span></div>
+    <div class="xbar"><div class="xbar-fill" id="nBar" style="width:0%"></div></div>
+  </div>
+</div></nav>
+
+<div class="xp-float" id="xpFloat"><div class="xp-card">⭐ <span class="xp-val" id="xpD">0</span></div></div>
+
+<main id="app"></main>
+
+<footer class="foot"><div class="wrap">Instructional design by <span>Hilary Homaii</span></div></footer>
+
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const S={xp:0,badges:[],done:[],ans:{},name:'',intake:null,phase:'welcome'};
+async function load(){try{const r=await window.storage.get('pfl4');if(r?.value)Object.assign(S,JSON.parse(r.value))}catch(e){}
+  if(S.phase==='lab')showLab();else if(S.phase==='prereqs')showPrereqs();else if(S.phase==='intake')startIntake();else showWelcome();
+  updUI();}
+async function save(){try{await window.storage.set('pfl4',JSON.stringify(S))}catch(e){}}
+function addXP(n){S.xp+=n;save();updUI();toast(`+${n} XP`);const e=document.getElementById('xpD');if(e){e.style.transform='scale(1.4)';setTimeout(()=>e.style.transform='',350)}}
+function earnBadge(n,ic){if(S.badges.find(b=>b.n===n))return;S.badges.push({n,ic});save();updUI();confetti();const p=document.getElementById('bp');document.getElementById('bpI').textContent=ic;document.getElementById('bpT').textContent=n;p.classList.add('show');setTimeout(()=>p.classList.remove('show'),3000)}
+function fin(i){if(!S.done.includes(i)){S.done.push(i);save();updUI()}}
+function updUI(){
+  const x=document.getElementById('xpD'),nb=document.getElementById('nB'),nx=document.getElementById('nXP');
+  if(x)x.textContent=S.xp;if(nb)nb.textContent=S.badges.length;if(nx)nx.textContent=S.xp;
+  const p=Math.round(S.done.length/12*100);
+  const b=document.getElementById('nBar');if(b)b.style.width=p+'%';
+}
+function confetti(){const cols=['#5b8dee','#9b6dff','#4ecdc4','#ff8a50','#ff6b9d','#ffd740','#40e0d0','#ff5252'];for(let i=0;i<55;i++){const p=document.createElement('div');p.className='confetti';p.style.cssText=`left:${Math.random()*100}vw;background:${cols[~~(Math.random()*cols.length)]};animation-delay:${Math.random()*.7}s;width:${7+Math.random()*10}px;height:${7+Math.random()*10}px;top:-20px`;document.body.appendChild(p);setTimeout(()=>p.remove(),3800)}}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2000)}
+function hl(t){
+  // Step 1: Escape only & and < (> is safe in HTML text content)
+  t = t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  // Step 2: Strings first (so keywords inside strings aren't highlighted)
+  t = t.replace(/(["'])(.*?)\1/g,'<span class="st">$1$2$1</span>');
+  // Step 3: Comments
+  t = t.replace(/(#[^<]*)/g,'<span class="cm">$1</span>');
+  // Step 4: Keywords (only outside of already-wrapped spans)
+  t = t.replace(/\b(def|return|import|if|else|elif|for|while|in|and|or|not|True|False|None)\b/g,'<span class="kw">$1</span>');
+  // Step 5: Built-in functions
+  t = t.replace(/\b(print|input|int|float|str|len|sum|max|min|round|range|type|abs)\b(?=\()/g,'<span class="bi">$1</span>');
+  // Step 6: Numbers
+  t = t.replace(/\b(\d+\.?\d*)\b/g,'<span class="nm">$1</span>');
+  // Step 7: module names
+  t = t.replace(/\b(math|random)\b/g,'<span class="bi">$1</span>');
+  return t;
+}
+function cS(ls){return`<div class="code">${ls.map((l,i)=>`<span class="line"><span class="ln">${i+1}</span>${hl(l||' ')}</span>`).join('\n')}</div>`}
+
+// ══════════════════════════════════════
+// PHASE 1: WELCOME
+// ══════════════════════════════════════
+function showWelcome(){
+  S.phase='welcome';save();scrollTo(0,0);
+  document.getElementById('topnav').style.display='none';
+  document.getElementById('xpFloat').style.display='none';
+  document.getElementById('app').innerHTML=`
+  <div class="phase"><div class="wrap"><div class="phase-card">
+    <div style="font-size:72px;margin-bottom:20px">⚗️</div>
+    <h1>Welcome to the<br><span style="color:var(--blue)">Python Functions</span> Lab</h1>
+    <p>This isn't a lecture. This is a laboratory where you'll <strong style="color:var(--text)">discover</strong> how Python functions work by doing, predicting, and building — at your own pace.</p>
+    <p style="font-size:17px">First, let's find out where you're starting from. No grades, no pressure — just a quick warm-up so we can guide you to the right place.</p>
+    <div style="margin-top:12px">
+      <label style="font-weight:700;font-size:18px;display:block;margin-bottom:10px">What should we call you?</label>
+      <input type="text" id="nameInput" class="ii" style="width:260px;font-size:18px;text-align:center" placeholder="Your first name" onkeydown="if(event.key==='Enter')startIntake()">
+    </div>
+    <div style="margin-top:28px">
+      <button class="btn btn-blue" onclick="startIntake()">Let's Go! →</button>
+    </div>
+    <div style="margin-top:20px">
+      <button class="btn btn-ghost btn-sm" onclick="skipToLab()" style="font-size:13px">I already know Python basics — skip to the lab →</button>
+    </div>
+  </div></div></div>`;
+}
+
+function skipToLab(){S.name=document.getElementById('nameInput')?.value||'Explorer';S.intake={score:6,areas:{variables:true,print:true,indent:true,expressions:true,errors:true,running:true}};S.phase='lab';save();showLab()}
+
+// ══════════════════════════════════════
+// PHASE 2: INTAKE (Hidden Assessment)
+// ══════════════════════════════════════
+const INTAKE=[
+  {q:"Which of these correctly stores the number 25 in a variable called <code>age</code>?",code:[],
+    opts:["<code>age = 25</code>","<code>age == 25</code>","<code>25 = age</code>","<code>age : 25</code>"],
+    correct:0,area:'variables',
+    fb:["Correct! A single <code>=</code> means 'store this value.' <code>age = 25</code> puts 25 into the variable age.","Close! But <code>==</code> is for comparison ('is age equal to 25?'), not for storing. A single <code>=</code> stores a value.","The variable name must go on the left side of <code>=</code>. Think of it as: the box name comes first, then what you put inside.","A colon <code>:</code> is used in other places in Python (like after <code>if</code> or <code>def</code>), but not for storing values in variables."]},
+  {q:"A variable <code>name</code> stores <code>\"Maya\"</code>. Which code displays <strong>Hello Maya</strong> on screen?",code:['name = "Maya"'],
+    opts:["<code>print(\"Hello\", name)</code>","<code>display(\"Hello\", name)</code>","<code>print Hello, name</code>","<code>print(\"Hello\", \"name\")</code>"],
+    correct:0,area:'print',
+    fb:["Correct! <code>print()</code> with parentheses displays output. Using <code>name</code> without quotes gives you the value inside the variable — Maya.","<code>display</code> is not a Python function. Python uses <code>print()</code> to show output on screen.","In Python, <code>print</code> requires parentheses: <code>print(...)</code>. Without them, Python doesn't know what to do.","Putting <code>name</code> in quotes makes it the literal text \"name\" instead of the variable's value. Without quotes, Python looks up what's stored inside the variable."]},
+  {q:"Which of these code blocks will run <strong>without</strong> causing an error?",code:[],
+    opts:[
+      "<code>if score > 90:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Great!\")</code>",
+      "<code>if score > 90<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Great!\")</code>",
+      "<code>if score > 90:<br>print(\"Great!\")</code>",
+      "<code>if (score > 90)<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Great!\")</code>"
+    ],
+    correct:0,area:'indent',
+    fb:["Correct! This has everything Python needs: the <code>if</code> keyword, a condition, a colon <code>:</code> at the end, and the next line indented with 4 spaces.","Missing the colon <code>:</code> at the end of the <code>if</code> line! Python requires a colon before an indented block.","The colon is there, but <code>print</code> is not indented. Python uses indentation (4 spaces) to know which code belongs inside the <code>if</code> block.","Missing the colon <code>:</code> after the condition. Parentheses around the condition are optional, but the colon is mandatory."]},
+  {q:"You want to store the value <strong>11</strong> in a variable called <code>result</code>. Which line does that?",code:[],
+    opts:["<code>result = 5 + 3 * 2</code>","<code>result = (5 + 3) * 2</code>","<code>result = 5 * 3 + 2</code>","<code>result = 5 + 3 + 2</code>"],
+    correct:0,area:'expressions',
+    fb:["Correct! Python follows math order of operations: multiplication first. So <code>3 * 2 = 6</code>, then <code>5 + 6 = 11</code>.","This gives 16. The parentheses force addition first: <code>(5+3)=8</code>, then <code>8*2=16</code>. Parentheses change the order!","This gives 17. <code>5*3=15</code>, then <code>15+2=17</code>. Close, but different operators.","This gives 10. <code>5+3+2=10</code>. All addition, no multiplication."]},
+  {q:"A student wrote four programs. Which one will <strong>cause an error</strong> when they click Run?",code:[],
+    opts:[
+      "<code>greeting = \"Hello\"<br>print(greeting)</code>",
+      "<code>x = 10<br>print(x + 5)</code>",
+      "<code>print(message)</code>",
+      "<code>name = \"Lina\"<br>print(\"Hi\", name)</code>"
+    ],
+    correct:2,area:'errors',
+    fb:["This code works perfectly — it stores a string and prints it.","This works too — it stores 10 and prints 15.","Correct! <code>message</code> was never created. Python tries to look it up, can't find it, and gives a <code>NameError</code>. You must create a variable before using it.","This works fine — it stores a name and prints a greeting."]},
+  {q:"Which code correctly asks the user to type their name and stores it in a variable?",code:[],
+    opts:["<code>name = input(\"Your name: \")</code>","<code>input(\"Your name: \") = name</code>","<code>name = ask(\"Your name: \")</code>","<code>name: input(\"Your name: \")</code>"],
+    correct:0,area:'running',
+    fb:["Correct! <code>input()</code> displays the prompt, waits for the user to type, and the result is stored in <code>name</code> using <code>=</code>.","The variable must go on the left side of <code>=</code>. You can't put a function call on the left.","<code>ask</code> is not a Python function. Python uses <code>input()</code> to get user input.","A colon <code>:</code> doesn't store values — you need <code>=</code> for that. Colons are used after <code>if</code>, <code>def</code>, and other block starters."]}
+];
+
+let intakeStep=0;
+let intakeScore={variables:0,print:0,indent:0,expressions:0,errors:0,running:0};
+
+function startIntake(){
+  S.name=document.getElementById('nameInput')?.value||'Explorer';
+  S.phase='intake';save();
+  intakeStep=0;
+  intakeScore={variables:0,print:0,indent:0,expressions:0,errors:0,running:0};
+  document.getElementById('topnav').style.display='none';
+  document.getElementById('xpFloat').style.display='none';
+  scrollTo(0,0);
+  renderIntakeStep();
+}
+
+function renderIntakeStep(){
+  if(intakeStep>=INTAKE.length){finishIntake();return}
+  const q=INTAKE[intakeStep];
+  const dots=INTAKE.map((_,i)=>`<div class="dot${i<intakeStep?' done':i===intakeStep?' active':''}"></div>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="phase"><div class="wrap"><div class="challenge">
+    <div class="dots">${dots}</div>
+    <div class="ch-num">Warm-Up ${intakeStep+1} of ${INTAKE.length}</div>
+    <h2>${q.q}</h2>
+    ${q.code.length ? cS(q.code) : ''}
+    <div class="ch-options" id="chOpts">
+      ${q.opts.map((o,i)=>`<div class="ch-opt" onclick="pickIntake(${intakeStep},${i})">${o}</div>`).join('')}
+    </div>
+    <div id="chFb"></div>
+  </div></div></div>`;
+}
+
+function pickIntake(step,sel){
+  const q=INTAKE[step];
+  const opts=document.querySelectorAll('#chOpts .ch-opt');
+  opts.forEach((o,i)=>{
+    o.classList.add('done');
+    if(i===q.correct)o.classList.add('correct');
+    if(i===sel&&sel!==q.correct)o.classList.add('wrong');
+  });
+  const ok=sel===q.correct;
+  if(ok){intakeScore[q.area]=1;addXP(5)}
+  document.getElementById('chFb').innerHTML=`
+    <div class="ch-fb ${ok?'ok':'no'}"><strong>${ok?'✓ Nice one!':'Not quite — but that\'s why we\'re here!'}</strong> ${q.fb[sel]}</div>
+    <div style="text-align:center;margin-top:20px"><button class="btn btn-blue btn-sm" onclick="intakeStep++;renderIntakeStep()">Continue →</button></div>`;
+}
+
+function finishIntake(){
+  const total=Object.values(intakeScore).reduce((a,b)=>a+b,0);
+  const pct=Math.round(total/6*100);
+  const level=pct>=80?'ready':pct>=50?'almost':'building';
+  S.intake={score:total,areas:Object.fromEntries(Object.entries(intakeScore).map(([k,v])=>[k,v===1]))};
+  S.phase=level==='ready'?'lab':'prereqs';save();
+
+  const weak=Object.entries(intakeScore).filter(([_,v])=>v===0).map(([k])=>k);
+  const strong=Object.entries(intakeScore).filter(([_,v])=>v===1).map(([k])=>k);
+
+  document.getElementById('app').innerHTML=`
+  <div class="phase"><div class="wrap"><div class="phase-card" style="max-width:800px">
+    <div style="font-size:56px;margin-bottom:16px">${level==='ready'?'🚀':level==='almost'?'💪':'🌱'}</div>
+    <h1>${S.name}, here's your starting point!</h1>
+    <p style="font-size:18px">You got <strong style="color:var(--text)">${total} out of 6</strong> warm-up challenges correct.</p>
+    <div class="result-bar"><div class="result-fill ${pct>=80?'high':pct>=50?'med':'low'}" style="width:${pct}%"></div></div>
+    ${strong.length?`<p style="color:var(--green);font-size:16px;margin-bottom:8px">✓ Solid on: ${strong.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(', ')}</p>`:''}
+    ${weak.length?`<p style="color:var(--orange);font-size:16px;margin-bottom:8px">⚡ Could use review: ${weak.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(', ')}</p>`:''}
+    <div style="margin-top:32px">
+      ${level==='ready'?`
+        <p style="color:var(--green);font-size:20px;font-weight:700;margin-bottom:16px">🚀 You're ready for the Function Lab!</p>
+        <button class="btn btn-green" onclick="showLab()">Enter the Lab →</button>
+      `:level==='almost'?`
+        <p style="font-size:18px;margin-bottom:16px">We recommend a quick refresher on a few concepts before diving into functions.</p>
+        <button class="btn btn-gold" onclick="showPrereqs()">Quick Refresher →</button>
+        <div style="margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="showLab()">Skip to Lab anyway →</button></div>
+      `:`
+        <p style="font-size:18px;margin-bottom:16px">No worries! Let's build your foundation first. These quick mini-lessons will get you ready.</p>
+        <button class="btn btn-gold" onclick="showPrereqs()">Build My Foundation →</button>
+      `}
+    </div>
+  </div></div></div>`;
+}
+
+// ══════════════════════════════════════
+// PHASE 3: PREREQUISITES
+// ══════════════════════════════════════
+function showPrereqs(){
+  S.phase='prereqs';save();scrollTo(0,0);
+  document.getElementById('topnav').style.display='';
+  document.getElementById('xpFloat').style.display='';
+  const areas=S.intake?.areas||{};
+  document.getElementById('app').innerHTML=`
+  <div style="padding:60px 0"><div class="wrap">
+    <h1 style="font-weight:900;font-size:36px;margin-bottom:12px">🌱 Foundation Builder</h1>
+    <p style="color:var(--text2);font-size:19px;margin-bottom:32px;max-width:600px">These quick lessons cover the building blocks you'll need. Tap any card to explore it.</p>
+    <div class="prereq-grid">
+      ${prereqCard('variables','📦','Variables','Storing values in named containers',areas.variables)}
+      ${prereqCard('print','📢','print()','How Python talks to you',areas.print)}
+      ${prereqCard('indent','↔️','Indentation','Why spacing matters in Python',areas.indent)}
+      ${prereqCard('expressions','🔢','Expressions','Math and logic in Python',areas.expressions)}
+      ${prereqCard('errors','🚨','Error Messages','Reading Python\'s complaints',areas.errors)}
+      ${prereqCard('running','▶️','Running Code','How Python executes your program',areas.running)}
+    </div>
+    <div style="text-align:center;margin-top:40px">
+      <button class="btn btn-green" onclick="showLab()">I'm Ready — Enter the Lab! →</button>
+    </div>
+  </div></div>`;
+}
+
+function prereqCard(id,icon,title,desc,mastered){
+  return`<div class="pq-card ${mastered?'mastered':''}" onclick="showPrereqLesson('${id}')">
+    <span class="pq-icon">${icon}</span>
+    <h4>${title}</h4>
+    <p>${mastered?'✓ You got this!':desc}</p>
+  </div>`;
+}
+
+function showPrereqLesson(id){
+  const lessons={
+    variables:{title:'📦 Variables: Named Containers',body:`
+      <p>A <strong>variable</strong> stores a value and gives it a name. Think of it like a labeled box.</p>
+      ${cS(['age = 25','name = "Maya"','price = 9.99'])}
+      <p>The <code>=</code> sign means "store this value." It does NOT mean "equals" like in math — it means <strong>"put this in the box."</strong></p>
+      <p>After storing, you can use the name to get the value back:</p>
+      ${cS(['age = 25','print(age)  # shows 25'])}
+    `},
+    print:{title:'📢 print(): Python Talks to You',body:`
+      <p><code>print()</code> displays a value on the screen. It's how your program communicates with the person running it.</p>
+      ${cS(['print("Hello!")     # shows: Hello!','print(42)           # shows: 42','name = "Maya"','print(name)         # shows: Maya'])}
+      <p>Notice: <code>print(name)</code> shows what's INSIDE the variable, not the word "name".</p>
+    `},
+    indent:{title:'↔️ Indentation: Belonging',body:`
+      <p>In Python, <strong>indentation</strong> (4 spaces) tells Python which lines belong together inside a block.</p>
+      ${cS(['if age > 18:','    print("Adult")     # inside the if','    print("Can vote")   # also inside','print("Done")          # outside — always runs'])}
+      <p>Lines 2-3 are indented → they only run if the condition is true.<br>Line 4 is NOT indented → it runs no matter what.</p>
+      <p>This will become <strong>crucial</strong> when you write functions!</p>
+    `},
+    expressions:{title:'🔢 Expressions: Calculations',body:`
+      <p>Python follows standard math rules. Multiplication and division happen before addition and subtraction.</p>
+      ${cS(['print(5 + 3)      # 8','print(10 - 4)     # 6','print(3 * 7)      # 21','print(5 + 3 * 2)  # 11 (not 16!)'])}
+      <p><code>5 + 3 * 2</code> → Python does <code>3 * 2</code> first (=6), then <code>5 + 6</code> = 11.</p>
+    `},
+    errors:{title:'🚨 Error Messages: Python\'s Complaints',body:`
+      <p>Errors are <strong>normal</strong> and helpful. Python tells you exactly what went wrong.</p>
+      ${cS(['# NameError: you used a variable that doesn\'t exist','print(greeting)  # greeting was never created!','','# SyntaxError: something is misspelled or mistyped','print("Hello"    # forgot the closing )'])}
+      <p>When you see an error, read it like a clue: it tells you the <strong>type</strong> of problem and the <strong>line number</strong>.</p>
+    `},
+    running:{title:'▶️ Running Code: Top to Bottom',body:`
+      <p>When you click Run, Python reads your code <strong>from top to bottom</strong>, one line at a time.</p>
+      ${cS(['print("First")   # runs 1st','print("Second")  # runs 2nd','print("Third")   # runs 3rd'])}
+      <p>This order matters! If you try to use a variable before creating it, Python hasn't seen it yet — and you get an error.</p>
+    `}
+  };
+  const l=lessons[id];
+  document.getElementById('app').innerHTML=`
+  <div style="padding:60px 0"><div class="wrap">
+    <div class="back-link" onclick="showPrereqs()">← Back to Foundation</div>
+    <div class="teach blue" style="max-width:750px"><h3>${l.title}</h3>${l.body}
+    <div style="margin-top:24px;text-align:center"><button class="btn btn-sm btn-green" onclick="S.intake.areas.${id}=true;save();addXP(10);showPrereqs()">✓ Got It!</button></div></div>
+  </div></div>`;
+}
+
+// ══════════════════════════════════════
+// PHASE 4: THE LAB
+// ══════════════════════════════════════
+const ST=[
+  {name:"Why Functions Exist",desc:"Discover why we break programs into pieces.",icon:"🧩",bdg:"Modular Thinker",bic:"🧩"},
+  {name:"Function Anatomy",desc:"The syntax: def, name, parentheses, colon, body.",icon:"🔬",bdg:"Syntax Builder",bic:"🔬"},
+  {name:"Void vs. Return",desc:"Functions that act vs. functions that deliver.",icon:"📤",bdg:"Classifier",bic:"📤"},
+  {name:"The main() Boss",desc:"The manager function running the show.",icon:"👔",bdg:"Boss Caller",bic:"👔"},
+  {name:"Execution Journey",desc:"Trace where Python jumps, line by line.",icon:"🗺️",bdg:"Tracer",bic:"🗺️"},
+  {name:"Parameters & Arguments",desc:"How data travels into functions.",icon:"📬",bdg:"Data Courier",bic:"📬"},
+  {name:"Return Values",desc:"How functions send results back.",icon:"🔄",bdg:"Return Master",bic:"🔄"},
+  {name:"Scope: Local vs Global",desc:"Where variables live and die.",icon:"🏠",bdg:"Scope Detective",bic:"🏠"},
+  {name:"Debugging Lab",desc:"Find and fix errors.",icon:"🔧",bdg:"Debugger",bic:"🔧"},
+  {name:"Modules",desc:"math, random, and more.",icon:"📦",bdg:"Module Explorer",bic:"📦"},
+  {name:"Design Challenge",desc:"Architect a program from scratch.",icon:"🏗️",bdg:"Architect",bic:"🏗️"},
+  {name:"Reflection",desc:"Review your journey.",icon:"📜",bdg:"Graduate",bic:"📜"}
+];
+
+function showLab(){
+  S.phase='lab';save();scrollTo(0,0);
+  document.getElementById('topnav').style.display='';
+  document.getElementById('xpFloat').style.display='';
+  updUI();
+  document.getElementById('app').innerHTML=`
+  <div style="padding:60px 0"><div class="wrap-wide">
+    <div style="margin-bottom:40px">
+      <p style="font-size:15px;color:var(--blue);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">⚗️ ${S.name}'s Laboratory</p>
+      <h1 style="font-weight:900;font-size:clamp(32px,5vw,48px);margin-bottom:12px">Function Lab Stations</h1>
+      <p style="color:var(--text2);font-size:18px;max-width:600px">Each station builds on the last. Start at Station 1 and work your way through. Take your time — this is your lab.</p>
+    </div>
+    <div class="sgrid" id="grid"></div>
+  </div></div>`;
+  renderGrid();
+}
+
+function renderGrid(){const g=document.getElementById('grid');if(!g)return;g.innerHTML='';ST.forEach((s,i)=>{const dn=S.done.includes(i),op=i===0||S.done.includes(i-1)||dn;const c=document.createElement('div');c.className=`sc${!op?' locked':''}`;c.dataset.i=i;c.innerHTML=`<span class="sc-icon">${s.icon}</span><div class="sc-num">Station ${i+1}</div><h3>${s.name}</h3><p>${s.desc}</p><div class="sc-bot"><span class="sc-st ${dn?'done':op?'open':'lock'}">${dn?'✓ Done':op?'● Ready':'🔒'}</span>${op&&!dn?'<span class="sc-ent">Enter →</span>':''}</div>`;if(op)c.onclick=()=>openSt(i);g.appendChild(c)})}
+
+function goHome(){showLab()}
+
+function openSt(i){
+  scrollTo(0,0);const s=ST[i];
+  document.getElementById('app').innerHTML=`
+  <div style="padding:40px 0 100px"><div class="wrap">
+    <div class="back-link" onclick="showLab()">← Back to Lab</div>
+    <div style="margin-bottom:8px;font-size:14px;font-weight:800;letter-spacing:2px;color:var(--blue)">${s.icon} STATION ${i+1}</div>
+    <h1 style="font-weight:900;font-size:clamp(30px,4.5vw,46px);margin-bottom:16px">${s.name}</h1>
+    <p style="color:var(--text2);font-size:19px;margin-bottom:40px;max-width:650px">${s.desc}</p>
+    <div id="stC">${getStation(i)}</div>
+    <div style="text-align:center;margin-top:56px"><button class="btn btn-green" onclick="handleDone(${i})">✓ Complete Station ${i+1}</button></div>
+  </div></div>`;
+  initSt(i);
+}
+
+function handleDone(i){fin(i);earnBadge(ST[i].bdg,ST[i].bic);confetti();showLab()}
+
+// ══════════════════════════════════════
+// QUIZ SYSTEM
+// ══════════════════════════════════════
+const QD={};
+function Q(id,q,opts,cor,rats,str,codeLs){
+  QD[id]={rats,str,cor};const dn=S.ans[id]!==undefined,pv=S.ans[id];
+  let x=`<div class="quiz" id="q-${id}">`;
+  if(codeLs)x+=cS(codeLs);
+  x+=`<div class="quiz-q">${q}</div>`;
+  opts.forEach((o,i)=>{const cl=dn?(i===cor?'ok dn':(i===pv&&pv!==cor?'no dn':'dn')):'';x+=`<div class="qo ${cl}" onclick="pQ('${id}',${i})">${o}</div>`});
+  x+=`<div id="qf-${id}">`;if(dn)x+=qfb(id,pv);x+=`</div></div>`;return x}
+function qfb(id,sel){const d=QD[id];if(!d)return'';const ok=sel===d.cor;let x=`<div class="qfb ${ok?'qok':'qno'}"><strong>${ok?'✓ Correct!':'✗ Not quite.'}</strong> ${d.rats[sel]}</div>`;if(d.str)x+=`<div class="strat"><b>📚 Strategy from Hilary:</b> ${d.str}</div>`;return x}
+function pQ(id,sel){if(S.ans[id]!==undefined)return;S.ans[id]=sel;save();const d=QD[id],ok=sel===d.cor;if(ok)addXP(10);const w=document.getElementById('q-'+id);w.querySelectorAll('.qo').forEach((o,i)=>{o.classList.add('dn');if(i===d.cor)o.classList.add('ok');if(i===sel&&sel!==d.cor)o.classList.add('no')});document.getElementById('qf-'+id).innerHTML=qfb(id,sel)}
+
+// ══════════════════════════════════════
+// STATION CONTENT (Discovery-first)
+// ══════════════════════════════════════
+function getStation(i){return[st0,st1,st2,st3,st4,st5,st6,st7,st8,st9,st10,st11][i]()}
+function initSt(i){if(i===3)initSt3();if(i===4)initSt4()}
+
+function st0(){return`
+<div class="teach purple"><h3>🤔 Before we teach you anything — look at this:</h3>
+<p>Imagine you're writing a program to calculate pay for 100 employees. For each employee you need to: ask their rate, ask their hours, calculate gross pay, calculate overtime, calculate tax, calculate net pay, and print a paycheck.</p>
+<p style="color:var(--orange);font-weight:700;font-size:19px">That's 7 steps × 100 employees = 700 lines of repeated code.</p>
+<p>What if there's a bug in the tax calculation? You'd have to find and fix it in <strong>100 different places</strong>.</p>
+</div>
+
+<div class="teach green"><h3>💡 The Solution: Functions</h3>
+<p>A <strong>function</strong> is a named group of instructions that does one specific job. You write it once, then <strong>call it</strong> whenever you need it.</p>
+<p>Instead of repeating 7 steps 100 times, you write each step once as a function and call them in a loop. Bug in the tax calculation? Fix it in <strong>one place</strong>.</p>
+</div>
+
+<div class="teach blue"><h3>🧠 Your Turn: What should each function be named?</h3>
+<p>Below is messy code. Read each task, then <strong>invent a descriptive function name</strong> for it. Good names start with a verb (get, calc, show) and describe the task.</p>
+${cS(['# Task A: Ask the user for their name','name = input("Name? ")','','# Task B: Ask for birth year','year = int(input("Year? "))','','# Task C: Calculate age','age = 2025 - year','','# Task D: Display a greeting','print("Hello " + name + "! Age: " + str(age))'])}
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+${['A','B','C','D'].map(t=>`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span style="font-family:var(--mono);min-width:80px;color:var(--blue);font-weight:700">Task ${t}:</span><input class="ii" id="fn${t}" placeholder="def ???()" style="min-width:200px"><button class="btn btn-sm btn-ghost" onclick="ckFn('fn${t}')">Check</button><span id="fn${t}-fb" style="font-size:15px"></span></div>`).join('')}
+</div></div>
+
+${Q('s0q1','A colleague copy-pastes 20 lines in 5 places. What is the biggest risk?',
+  ['The code runs slower','A bug must be fixed in all 5 places','Python throws a duplication error','Variable names conflict'],1,
+  ['Not about speed.','Correct! Duplicated code = duplicated bugs. Fix once with a function.','Python has no duplication check.','Variables in separate locations don\'t conflict.'],
+  'Functions let you fix a bug in one place. Every call gets the fix.')}
+`}
+
+function ckFn(id){const inp=document.getElementById(id),v=inp.value.trim().toLowerCase().replace(/[()]/g,'').replace(/ /g,'_'),fb=document.getElementById(id+'-fb');
+if(!v){fb.innerHTML='<span style="color:var(--orange)">Type a name!</span>';return}
+if(/^\d/.test(v)){fb.innerHTML='<span style="color:var(--red)">❌ Can\'t start with number</span>';return}
+if(/\s/.test(v)){fb.innerHTML='<span style="color:var(--red)">❌ No spaces — use underscores</span>';return}
+const hasVerb=/^(get|ask|calc|compute|show|display|print|check|find|determine|input|read|make|create|build|greet|format|generate)/.test(v);
+if(hasVerb&&v.length>4){fb.innerHTML='<span style="color:var(--green)">✅ Great name!</span>';inp.classList.add('iok');addXP(5)}
+else if(v.length<=3)fb.innerHTML='<span style="color:var(--orange)">⚠️ Too short — try verb+noun like get_name</span>';
+else fb.innerHTML='<span style="color:var(--orange)">⚠️ Try starting with a verb (get_, calc_, show_)</span>'}
+
+function st1(){return`
+<div class="teach purple"><h3>🤔 Prediction Time</h3>
+<p>Look at this code. <strong>Before reading the explanation</strong> — what do you think each part does?</p>
+<div class="code" style="font-size:20px;line-height:2.6;cursor:pointer">
+<span class="line"><span class="ln">1</span><span onclick="sP('kw')" style="border-bottom:3px solid var(--purple);cursor:pointer"><span class="kw">def</span></span> <span onclick="sP('nm')" style="border-bottom:3px solid var(--blue);cursor:pointer"><span class="fn">greet</span></span><span onclick="sP('pr')" style="border-bottom:3px solid var(--cyan);cursor:pointer">(<span class="pm">name</span>)</span><span onclick="sP('co')" style="border-bottom:3px solid var(--orange);cursor:pointer">:</span></span>
+<span class="line" onclick="sP('bd')" style="cursor:pointer"><span class="ln">2</span>    <span class="bi">print</span>(<span class="st">"Hello"</span>, name)</span>
+</div>
+<p style="margin-top:12px">👆 <strong>Click each colored part</strong> to reveal what it does.</p>
+<div id="pI" style="min-height:80px;margin-top:12px"></div></div>
+
+<div class="teach orange"><h3>🧠 Build Your Own Function</h3>
+<p>Create a function that converts Fahrenheit to Celsius. Formula: <code style="font-family:var(--mono);background:rgba(91,141,238,0.1);padding:3px 10px;border-radius:6px">(f - 32) × 5/9</code></p>
+<div class="code" style="font-size:18px;line-height:2.6;margin-top:16px">
+<span class="line"><span class="ln">1</span><span class="kw">def</span> <input class="ii" id="bf1" placeholder="function_name" style="width:200px;font-size:16px">(<input class="ii" id="bf2" placeholder="parameter" style="width:140px;font-size:16px">):</span>
+<span class="line"><span class="ln">2</span>    celsius = (<input class="ii" id="bf3" placeholder="???" style="width:140px;font-size:16px"> - 32) * 5/9</span>
+<span class="line"><span class="ln">3</span>    <select class="is" id="bf4" style="font-size:16px"><option value="">???</option><option value="return">return</option><option value="print">print</option></select> celsius</span>
+</div><button class="btn btn-sm btn-blue" style="margin-top:16px" onclick="ckBF()">Check My Function</button><div id="bf-fb" style="margin-top:14px"></div></div>
+`}
+
+function sP(p){const m={kw:{t:'<span style="color:var(--purple)">def</span>',d:'Tells Python: "I\'m creating a new function." It STORES instructions but does NOT run them yet.'},nm:{t:'<span style="color:var(--blue)">greet</span>',d:'The function\'s name. This is how other code calls it. Use descriptive lowercase names with underscores.'},pr:{t:'<span style="color:var(--cyan)">(name)</span>',d:'A parameter — a variable that receives data when the function is called. Like a mailbox slot.'},co:{t:'<span style="color:var(--orange)">:</span>',d:'Required! Tells Python an indented block follows. Forgetting this = the #1 syntax error.'},bd:{t:'<span style="color:var(--green)">print("Hello", name)</span>',d:'The function body. Every indented line belongs to this function. This is the work it does when called.'}};const i=m[p];document.getElementById('pI').innerHTML=`<div class="teach blue" style="margin:0"><h3>${i.t}</h3><p>${i.d}</p></div>`}
+
+function ckBF(){const n=document.getElementById('bf1').value.trim(),p=document.getElementById('bf2').value.trim(),e=document.getElementById('bf3').value.trim(),r=document.getElementById('bf4').value,fb=document.getElementById('bf-fb');let iss=[];
+if(!n)iss.push('Name your function (like <code>to_celsius</code>).');
+if(!p)iss.push('Need a parameter for the temperature input.');
+if(!e||e==='???')iss.push('Use your parameter name in the formula.');
+if(r!=='return')iss.push('Use <code>return</code> to send the value back.');
+if(!iss.length){fb.innerHTML='<div class="qfb qok"><strong>✅ Excellent!</strong> Your function takes Fahrenheit, converts it, and returns Celsius!</div>';addXP(20);['bf1','bf2','bf3'].forEach(id=>document.getElementById(id).classList.add('iok'))}
+else fb.innerHTML=`<div class="qfb qno"><strong>Almost!</strong> ${iss.join(' ')}</div>`}
+
+function st2(){return`
+<div class="teach purple"><h3>🤔 Prediction: What will this print?</h3>
+<p>Don't read ahead — just look at the code and make your best guess:</p>
+${cS(['def add(a, b):','    print(a + b)','','result = add(2, 3)','print("result is:", result)'])}
+</div>
+${Q('s2pred','What will appear on the screen?',
+  ['Just the number 5','5 and then "result is: 5"','5 and then "result is: None"','An error'],2,
+  ['5 does appear first, but there is a second line...','This would be true if the function used return. But it used print instead!','Correct! The function prints 5 (line 2), but never returns a value. So result is None. This is THE most important distinction: print ≠ return.','No error — it runs, just gives a surprising result.'],
+  'print() shouts to the screen. return hands a value back to the caller. They are completely different operations. This is the #1 trap for beginners.')}
+
+<div class="two" style="margin:28px 0">
+<div class="teach pink" style="margin:0"><h3>📤 Void: Does and Leaves</h3>
+<p>No value sent back.</p>
+${cS(['def say_hi():','    print("Hello!")','','say_hi()  # shows Hello!'])}</div>
+<div class="teach green" style="margin:0"><h3>📥 Returns: Does and Delivers</h3>
+<p>Sends a value back.</p>
+${cS(['def add(a, b):','    return a + b','','result = add(3, 4)  # 7'])}</div></div>
+`}
+
+function st3(){return`
+<div class="teach green"><h3>🤔 Prediction: What order do things happen?</h3>
+${cS(['def main():','    print("Step 1")','    do_work()','    print("Step 3")','','def do_work():','    print("Step 2")','','main()'])}
+<p>What order do you think the steps print?</p></div>
+${Q('s3pred','What is the output order?',
+  ['Step 1, Step 2, Step 3','Step 2, Step 1, Step 3','Nothing — main is never called','Step 1, Step 3, Step 2'],0,
+  ['Correct! main() runs first, prints Step 1, calls do_work() which prints Step 2, returns, then prints Step 3.','do_work() only runs when main() calls it on line 3.','Look at line 9 — main() IS called!','Step 2 happens DURING main, between Steps 1 and 3.'],
+  'main() is the boss. It delegates to workers (other functions) in order.')}
+<div class="teach blue"><h3>🎬 Watch It Happen</h3>
+<div id="wk" style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:20px 0"></div>
+<div class="out" id="bL" style="min-height:120px"><div class="out-label">Execution Log</div><div style="color:var(--text3)">Click Run...</div></div>
+<div style="margin-top:16px;display:flex;gap:10px"><button class="btn btn-blue" id="rB" onclick="rBoss()">▶ Run main()</button><button class="btn btn-ghost" onclick="resetB()">↺ Reset</button></div></div>
+`}
+
+function initSt3(){const w=document.getElementById('wk');if(!w)return;['do_work()'].forEach(fn=>{const d=document.createElement('div');d.id='w-'+fn.replace(/[()]/g,'');d.style.cssText='padding:16px 26px;background:rgba(255,255,255,0.04);border:2px solid var(--border);border-radius:14px;font-family:var(--mono);font-size:15px;font-weight:600;transition:all .5s';d.textContent=fn;w.appendChild(d)})}
+function rBoss(){const log=document.getElementById('bL');document.getElementById('rB').disabled=true;log.innerHTML='<div class="out-label">Execution Log</div>';
+[{m:'→ Python stores main() and do_work()...',c:'var(--text2)',t:500},{m:'→ Line 9: main() called!',c:'var(--blue)',t:1200},{m:'  → print("Step 1")',c:'var(--green)',t:1900},{m:'  → do_work() called — jumping!',c:'var(--purple)',t:2600,w:'do_work'},{m:'    → print("Step 2")',c:'var(--green)',t:3300},{m:'  ← Returned to main()',c:'var(--yellow)',t:4000,w:'do_work',d:1},{m:'  → print("Step 3")',c:'var(--green)',t:4700},{m:'✅ Done!',c:'var(--yellow)',t:5400}].forEach(s=>{setTimeout(()=>{log.innerHTML+=`<div style="color:${s.c};font-size:15px">${s.m}</div>`;if(s.w){const e=document.getElementById('w-'+s.w);if(e){e.style.borderColor=s.d?'var(--green)':'var(--blue)';e.style.background=s.d?'rgba(78,205,196,0.1)':'rgba(91,141,238,0.1)'}}if(s.t===5400){document.getElementById('rB').disabled=false;addXP(10)}log.scrollTop=log.scrollHeight},s.t)})}
+function resetB(){document.getElementById('bL').innerHTML='<div class="out-label">Execution Log</div><div style="color:var(--text3)">Click Run...</div>';const e=document.getElementById('w-do_work');if(e){e.style.borderColor='var(--border)';e.style.background='rgba(255,255,255,0.04)'}}
+
+const EL=['def main():','    print("I have a message.")','    message()','    print("Goodbye!")','','def message():','    print("I am Arthur,")','    print("King of the Britons.")','','main()'];
+const ES=[{ln:0,x:'Stores main(). Does NOT run.',tag:'d',o:''},{ln:5,x:'Stores message().',tag:'d',o:''},{ln:9,x:'main() CALLED — jump in!',tag:'c',o:''},{ln:1,x:'print("I have a message.")',tag:'e',o:'I have a message.'},{ln:2,x:'message() called — JUMP!',tag:'c',o:''},{ln:6,x:'print("I am Arthur,")',tag:'e',o:'I am Arthur,'},{ln:7,x:'print("King of the Britons.")',tag:'e',o:'King of the Britons.'},{ln:2,x:'message() done — return to main()',tag:'r',o:''},{ln:3,x:'print("Goodbye!")',tag:'e',o:'Goodbye!'},{ln:9,x:'Done! 🎉',tag:'r',o:''}];
+let eS=-1,eO='';
+
+function st4(){return`
+<div class="teach green"><h3>🗺️ Step-by-Step Execution Tracer</h3><p>Click "Next Step" and watch Python jump between functions.</p>
+<div class="two"><div id="eC"></div><div><div class="out" id="eO" style="min-height:180px"><div class="out-label">Output</div><span style="color:var(--text3)">Waiting...</span></div><div id="eE" style="margin-top:14px;padding:20px;background:rgba(255,255,255,0.02);border:2px solid var(--border);border-radius:14px;min-height:70px;font-size:17px;color:var(--text2)">Click Next Step →</div></div></div>
+<div style="margin-top:20px;display:flex;gap:10px"><button class="btn btn-blue btn-sm" onclick="eN()">Next Step →</button><button class="btn btn-ghost btn-sm" onclick="eR()">↺ Reset</button></div></div>
+`}
+
+function initSt4(){eR()}
+function eR(){eS=-1;eO='';rE()}
+function rE(){const cd=document.getElementById('eC'),ot=document.getElementById('eO'),ep=document.getElementById('eE');if(!cd)return;const hi=eS>=0?ES[eS].ln:-1;
+cd.innerHTML=`<div class="code">${EL.map((l,i)=>`<span class="line${i===hi?(ES[eS].tag==='e'?' hlg':' hl'):''}"><span class="ln">${i+1}</span>${i===hi?'<span style="color:var(--yellow);font-weight:bold;margin-right:6px">▶</span>':''}${hl(l||' ')}</span>`).join('\n')}</div>`;
+ot.innerHTML=`<div class="out-label">Output</div>${eO?eO.split('\n').filter(Boolean).map(l=>`<div>${l}</div>`).join(''):'<span style="color:var(--text3)">Waiting...</span>'}`;
+if(eS>=0)ep.innerHTML=`<strong>Step ${eS+1}:</strong> ${ES[eS].x}`;else ep.innerHTML='Click Next Step →'}
+function eN(){eS++;if(eS>=ES.length){eS=ES.length-1;addXP(15);return}if(ES[eS].o)eO+=ES[eS].o+'\n';rE()}
+
+function st5(){return`
+<div class="teach orange"><h3>📬 Arguments Travel, Parameters Catch</h3>
+<p><strong>Argument</strong> = the value you send. <strong>Parameter</strong> = the variable inside that catches it.</p>
+<div class="conveyor"><div class="cv">"Maya"</div><div class="cva">→→→</div><div style="padding:10px 20px;background:rgba(155,109,255,0.1);border:2px solid var(--purple);border-radius:10px;color:var(--purple);font-weight:700;font-family:var(--mono)">greet(name)</div><div class="cva">→</div><div style="color:var(--green);font-weight:700;font-size:17px;font-family:var(--mono)">name = "Maya" ✓</div></div></div>
+
+${Q('s5q1','In <code>calc(100, 0.08, 5)</code>, the 2nd parameter receives:',
+  ['100','0.08','5','Nothing'],1,
+  ['100 → 1st parameter.','Correct! By position: 1st arg→1st param, 2nd→2nd, 3rd→3rd.','5 → 3rd parameter.','It does receive 0.08.'],
+  'Arguments match parameters by POSITION. Count left to right.')}
+`}
+
+function st6(){return`
+<div class="teach green"><h3>🤔 Prediction: What happens here?</h3>
+${cS(['def double(n):','    return n * 2','','result = double(double(3))','print(result)'])}
+</div>
+${Q('s6q1','What is printed?',['6','12','9','Error — can\'t nest calls'],1,
+  ['That\'s just double(3). But we pass THAT into double again!','Correct! Inner first: double(3)→6. Outer: double(6)→12. Inside-out!','Would be 3×3. double does ×2.','Nesting works perfectly!'],
+  'Nested calls: evaluate from INSIDE OUT.')}
+`}
+
+function st7(){return`
+<div class="teach blue"><h3>🤔 Prediction: What happens on line 6?</h3>
+${cS(['def set_value():','    x = 42','','set_value()','','print(x)'])}
+</div>
+${Q('s7q1','What happens when line 6 runs?',['Prints 42','Prints None','NameError: x is not defined','Prints 0'],2,
+  ['x was born inside the function — it died when the function ended.','x doesn\'t even exist outside the function.','Correct! x is LOCAL to set_value(). When the function ended, x was destroyed. Outside, it doesn\'t exist.','x was never 0.'],
+  'Where was x born? Inside the function. It lives and dies there.')}
+`}
+
+function st8(){return`
+<div class="teach red"><h3>🔧 Debug These Programs</h3><p>Each one has a bug. Think about WHY before choosing.</p></div>
+
+${Q('s8q1','This code produces no output. Why?',['print is broken','Function defined but never called','Indentation is wrong','greet isn\'t valid'],1,
+  ['print() works fine.','Correct! Add greet() at the bottom. Defining ≠ running!','Indentation is fine.','greet is valid.'],
+  'A recipe card doesn\'t cook food. You must follow it (call the function).',
+  ['def greet():','    print("Hello!")','','# nothing happens...'])}
+
+${Q('s8q2','Output: 5, then "Answer: None". How to fix?',['Change print(a+b) to return a+b','Add global result','Just write result = 5','Remove the 2nd print'],0,
+  ['Correct! return sends the value back so result can store it.','Bad practice.','Defeats the purpose.','Hides the bug.'],
+  'print() is for humans to see. return is for code to use.',
+  ['def add(a, b):','    print(a + b)','','result = add(2, 3)','print("Answer:", result)'])}
+`}
+
+function st9(){return`
+<div class="teach green"><h3>📦 Modules: Python's Toolkits</h3>
+<p>A <strong>module</strong> is a file of pre-built Python code. Import it, then use <strong>dot notation</strong>:</p>
+${cS(['import math','print(math.sqrt(16))  # 4.0','print(math.pi)        # 3.14159...','','import random','print(random.randint(1, 10))  # random number 1-10'])}
+<p><code>math.pi</code> is a <strong>variable</strong>, not a function — no parentheses!</p>
+<div style="margin-top:20px"><button class="btn btn-sm btn-pink" onclick="document.getElementById('dR').textContent=Math.floor(Math.random()*10)+1">🎲 Roll random.randint(1, 10)!</button><div id="dR" style="margin-top:12px;font-family:var(--mono);font-size:32px;font-weight:800;color:var(--yellow);min-height:48px"></div></div></div>
+
+${Q('s9q1','How to call sqrt from math?',['sqrt(16)','math.sqrt(16)','math(sqrt,16)','import sqrt'],1,
+  ['Need the module prefix.','Correct! module.function() is the pattern.','Invalid syntax.','import loads modules, doesn\'t call functions.'],
+  'Dot notation = address: math.sqrt means "sqrt inside math."')}
+`}
+
+function st10(){return`
+<div class="teach gold"><h3>🏗️ You're the Architect Now</h3>
+<p>Design a modular pay calculator. Think about which functions you need and what each should do.</p></div>
+${Q('s10q1','Which function should control the overall program flow?',['get_rate()','calc_pay()','main()','show_results()'],2,
+  ['Only handles one input.','Only one calculation.','Correct! main() orchestrates: get inputs → calculate → display.','Only the final display.'],
+  'main() is the boss who calls workers in order.')}
+${Q('s10q2','calc_gross_pay() uses print() instead of return. What breaks?',['Nothing','main() can\'t pass the value forward','Crash','Calculated twice'],1,
+  ['There IS a problem.','Correct! Print displays then the value is gone. main() gets None.','Doesn\'t crash — just wrong results.','Only calculated once, but lost.'],
+  'If other functions need the value, you MUST return it.')}
+`}
+
+function st11(){return`
+<div class="teach purple"><h3>📝 Reflect on Your Journey</h3>
+<div style="display:flex;flex-direction:column;gap:22px;margin-top:18px">
+<div><label style="font-weight:700;font-size:18px;display:block;margin-bottom:8px">What about functions "clicked" for you?</label><textarea id="r1" style="width:100%;height:90px;background:rgba(255,255,255,0.03);border:2px solid var(--border);border-radius:14px;padding:16px;color:var(--text);font-family:var(--font);font-size:17px;resize:vertical" placeholder="..."></textarea></div>
+<div><label style="font-weight:700;font-size:18px;display:block;margin-bottom:8px">Explain print() vs return in your own words.</label><textarea id="r2" style="width:100%;height:90px;background:rgba(255,255,255,0.03);border:2px solid var(--border);border-radius:14px;padding:16px;color:var(--text);font-family:var(--font);font-size:17px;resize:vertical" placeholder="..."></textarea></div>
+</div></div>
+<div class="teach gold" style="margin-top:32px"><h3>📊 Your Lab Report</h3>
+<button class="btn btn-gold" onclick="genR()">📋 Generate Report</button><div id="rO" style="margin-top:24px"></div></div>`}
+function genR(){document.getElementById('rO').innerHTML=`<div style="background:var(--card);border:2px solid rgba(255,215,64,0.2);border-radius:var(--r);padding:40px">
+<h2 style="font-weight:900;font-size:32px;text-align:center;margin-bottom:24px">🧪 ${S.name}'s Lab Report</h2>
+<div style="display:flex;gap:20px;margin-bottom:24px;flex-wrap:wrap">
+<div style="flex:1;min-width:140px;background:rgba(255,215,64,0.06);border:2px solid rgba(255,215,64,0.15);border-radius:16px;padding:24px;text-align:center"><div style="font-size:13px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:6px">XP Earned</div><div style="font-size:40px;font-weight:900;color:var(--yellow)">${S.xp}</div></div>
+<div style="flex:1;min-width:140px;background:rgba(78,205,196,0.06);border:2px solid rgba(78,205,196,0.15);border-radius:16px;padding:24px;text-align:center"><div style="font-size:13px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:6px">Stations</div><div style="font-size:40px;font-weight:900;color:var(--green)">${S.done.length}/12</div></div></div>
+<h3 style="font-weight:800;margin-bottom:12px">🏆 Badges (${S.badges.length})</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px">${S.badges.length?S.badges.map(b=>`<span style="padding:10px 20px;background:rgba(255,215,64,0.1);border:2px solid rgba(255,215,64,0.2);border-radius:60px;font-size:15px;font-weight:700;color:var(--yellow)">${b.ic} ${b.n}</span>`).join(''):'<span style="color:var(--text3)">Complete stations to earn badges!</span>'}</div>
+<div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-sm btn-ghost" onclick="window.print()">🖨️ Print / PDF</button></div></div>`;addXP(10)}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+load();
+</script>
+</body>
+</html>
