@@ -181,6 +181,33 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 .foot{text-align:center;padding:60px 0;border-top:1px solid var(--border);font-size:16px;color:var(--text3);z-index:2;position:relative}
 .foot span{color:var(--yellow);font-weight:700}
+
+/* Output demonstrations and foundation checks */
+.output-demo{margin:22px 0;background:rgba(255,255,255,0.025);border:2px solid rgba(64,224,208,0.18);border-radius:18px;padding:22px}
+.flow-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}
+.dotstream{display:flex;align-items:center;gap:5px;min-width:150px;height:26px;position:relative}
+.dotstream span{width:7px;height:7px;border-radius:50%;background:var(--cyan);opacity:.25;animation:dotPulse 1.8s infinite ease-in-out}
+.dotstream span:nth-child(1){animation-delay:.05s}.dotstream span:nth-child(2){animation-delay:.15s}.dotstream span:nth-child(3){animation-delay:.25s}.dotstream span:nth-child(4){animation-delay:.35s}.dotstream span:nth-child(5){animation-delay:.45s}.dotstream span:nth-child(6){animation-delay:.55s}.dotstream span:nth-child(7){animation-delay:.65s}
+.dotstream:after{content:'➜';color:var(--yellow);font-size:24px;font-weight:900;margin-left:8px;animation:arrowPush 1.8s infinite ease-in-out}
+@keyframes dotPulse{0%,100%{transform:scale(.7);opacity:.2}45%{transform:scale(1.35);opacity:1}}
+@keyframes arrowPush{0%,100%{transform:translateX(0);opacity:.45}50%{transform:translateX(10px);opacity:1}}
+.monitor{background:#050812;border:3px solid rgba(78,205,196,0.35);border-radius:16px;min-width:220px;min-height:110px;box-shadow:0 0 28px rgba(64,224,208,.1), inset 0 0 25px rgba(64,224,208,.04);position:relative;padding:34px 20px 20px;text-align:center;font-family:var(--mono)}
+.monitor:before{content:attr(data-label);position:absolute;top:8px;left:12px;right:12px;text-align:center;font-family:var(--font);font-weight:900;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--cyan)}
+.monitor .screen-value{display:inline-block;color:var(--green);font-size:26px;font-weight:900;animation:riseValue 1.5s infinite ease-in-out}
+.monitor .screen-error{display:block;color:var(--red);font-size:15px;line-height:1.6;text-align:left;white-space:pre-wrap;animation:riseValue 1.5s infinite ease-in-out}
+@keyframes riseValue{0%{opacity:.2;transform:translateY(14px) scale(.96)}45%,80%{opacity:1;transform:translateY(0) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.note-box{background:rgba(255,215,64,0.07);border:2px solid rgba(255,215,64,0.18);border-radius:16px;padding:18px 20px;margin:18px 0;color:var(--text2)}
+.note-box strong{color:var(--yellow)}
+.brace-demo{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:stretch;margin:18px 0;background:rgba(255,255,255,.025);border:2px solid rgba(155,109,255,.18);border-radius:18px;padding:18px}
+.curly-brace{font-family:Georgia,serif;font-size:118px;line-height:.78;color:var(--purple);animation:braceGrow 1.7s ease-in-out infinite alternate;display:flex;align-items:center}
+@keyframes braceGrow{from{transform:scaleY(.82);opacity:.55}to{transform:scaleY(1);opacity:1}}
+.brace-lines{display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:16px}
+.brace-line{padding:8px 12px;border-radius:10px;background:rgba(155,109,255,.08);border:1px solid rgba(155,109,255,.18)}
+.always-line{padding:8px 12px;border-radius:10px;background:rgba(255,215,64,.07);border:1px solid rgba(255,215,64,.18)}
+.error-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+.err-card{background:rgba(255,82,82,.06);border:2px solid rgba(255,82,82,.15);border-radius:16px;padding:16px}
+.err-card h4{color:var(--red);font-size:17px;margin-bottom:6px}.err-card p{font-size:15px;margin:0;color:var(--text2)}
+
 @media(max-width:640px){.sgrid{grid-template-columns:1fr}.wrap,.wrap-wide{padding:0 16px}.phase-card,.challenge{padding:28px}}
 </style>
 </head>
@@ -242,6 +269,15 @@ function hl(t){
 }
 function cS(ls){return`<div class="code">${ls.map((l,i)=>`<span class="line"><span class="ln">${i+1}</span>${hl(l||' ')}</span>`).join('\n')}</div>`}
 
+function outputDemo(codeLines, output, label='Your screen will display'){
+  const isError = /Error|Traceback|invalid syntax|not defined/i.test(output);
+  const value = isError ? `<span class="screen-error">${output.replace(/</g,'&lt;')}</span>` : `<span class="screen-value">${output}</span>`;
+  return `<div class="output-demo">${cS(codeLines)}<div class="flow-row"><div class="dotstream"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="monitor" data-label="${label}">${value}</div></div></div>`;
+}
+function explainBox(text){return `<div class="note-box"><strong>What this means:</strong> ${text}</div>`}
+function braceDemo(){return `<div class="brace-demo"><div class="curly-brace">{</div><div class="brace-lines"><div class="brace-line">print("Adult") <span style="color:var(--green)">inside the if</span></div><div class="brace-line">print("Can vote") <span style="color:var(--green)">also inside</span></div><div class="always-line">print("Done") <span style="color:var(--yellow)">outside; always runs</span></div></div></div>`}
+
+
 // ══════════════════════════════════════
 // PHASE 1: WELCOME
 // ══════════════════════════════════════
@@ -253,8 +289,8 @@ function showWelcome(){
   <div class="phase"><div class="wrap"><div class="phase-card">
     <div style="font-size:72px;margin-bottom:20px">⚗️</div>
     <h1>Welcome to the<br><span style="color:var(--blue)">Python Functions</span> Lab</h1>
-    <p>This isn't a lecture. This is a laboratory where you'll <strong style="color:var(--text)">discover</strong> how Python functions work by doing, predicting, and building — at your own pace.</p>
-    <p style="font-size:17px">First, let's find out where you're starting from. No grades, no pressure — just a quick warm-up so we can guide you to the right place.</p>
+    <p>This isn't a lecture. This is a laboratory where you'll <strong style="color:var(--text)">discover</strong> how Python functions work by doing, predicting, and building; at your own pace.</p>
+    <p style="font-size:17px">First, let's find out where you're starting from. No grades, no pressure; just a quick warm-up so we can guide you to the right place.</p>
     <div style="margin-top:12px">
       <label style="font-weight:700;font-size:18px;display:block;margin-bottom:10px">What should we call you?</label>
       <input type="text" id="nameInput" class="ii" style="width:260px;font-size:18px;text-align:center" placeholder="Your first name" onkeydown="if(event.key==='Enter')startIntake()">
@@ -263,7 +299,7 @@ function showWelcome(){
       <button class="btn btn-blue" onclick="startIntake()">Let's Go! →</button>
     </div>
     <div style="margin-top:20px">
-      <button class="btn btn-ghost btn-sm" onclick="skipToLab()" style="font-size:13px">I already know Python basics — skip to the lab →</button>
+      <button class="btn btn-ghost btn-sm" onclick="skipToLab()" style="font-size:13px">I already know Python basics; skip to the lab →</button>
     </div>
   </div></div></div>`;
 }
@@ -277,11 +313,11 @@ const INTAKE=[
   {q:"Which of these correctly stores the number 25 in a variable called <code>age</code>?",code:[],
     opts:["<code>age = 25</code>","<code>age == 25</code>","<code>25 = age</code>","<code>age : 25</code>"],
     correct:0,area:'variables',
-    fb:["Correct! A single <code>=</code> means 'store this value.' <code>age = 25</code> puts 25 into the variable age.","Close! But <code>==</code> is for comparison ('is age equal to 25?'), not for storing. A single <code>=</code> stores a value.","The variable name must go on the left side of <code>=</code>. Think of it as: the box name comes first, then what you put inside.","A colon <code>:</code> is used in other places in Python (like after <code>if</code> or <code>def</code>), but not for storing values in variables."]},
+    fb:["Correct. A single <code>=</code> stores a value. <code>age = 25</code> creates the variable <code>age</code> and puts 25 inside it.","<code>==</code> compares two things. It asks, <em>Is age equal to 25?</em> It does not store anything. Use one <code>=</code> for storage and two <code>==</code> for comparison.","The storage name must be on the left. Python reads this as: put the right-side value into the left-side variable name.","A colon starts a block after words like <code>if</code>, <code>for</code>, and <code>def</code>. It does not store a value in a variable."]},
   {q:"A variable <code>name</code> stores <code>\"Maya\"</code>. Which code displays <strong>Hello Maya</strong> on screen?",code:['name = "Maya"'],
     opts:["<code>print(\"Hello\", name)</code>","<code>display(\"Hello\", name)</code>","<code>print Hello, name</code>","<code>print(\"Hello\", \"name\")</code>"],
     correct:0,area:'print',
-    fb:["Correct! <code>print()</code> with parentheses displays output. Using <code>name</code> without quotes gives you the value inside the variable — Maya.","<code>display</code> is not a Python function. Python uses <code>print()</code> to show output on screen.","In Python, <code>print</code> requires parentheses: <code>print(...)</code>. Without them, Python doesn't know what to do.","Putting <code>name</code> in quotes makes it the literal text \"name\" instead of the variable's value. Without quotes, Python looks up what's stored inside the variable."]},
+    fb:["Correct. <code>print()</code> displays output. <code>name</code> has no quotes, so Python opens the variable and uses the value inside it: Maya.","<code>display</code> is not the basic Python command for screen output in this lesson. Use <code>print()</code>.","Python 3 requires parentheses with <code>print()</code>. Without parentheses, the line is not valid Python syntax.","Quotes change the meaning. <code>\"name\"</code> is the literal word name; <code>name</code> without quotes means Python should look inside the variable."]},
   {q:"Which of these code blocks will run <strong>without</strong> causing an error?",code:[],
     opts:[
       "<code>if score > 90:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Great!\")</code>",
@@ -290,11 +326,11 @@ const INTAKE=[
       "<code>if (score > 90)<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Great!\")</code>"
     ],
     correct:0,area:'indent',
-    fb:["Correct! This has everything Python needs: the <code>if</code> keyword, a condition, a colon <code>:</code> at the end, and the next line indented with 4 spaces.","Missing the colon <code>:</code> at the end of the <code>if</code> line! Python requires a colon before an indented block.","The colon is there, but <code>print</code> is not indented. Python uses indentation (4 spaces) to know which code belongs inside the <code>if</code> block.","Missing the colon <code>:</code> after the condition. Parentheses around the condition are optional, but the colon is mandatory."]},
-  {q:"You want to store the value <strong>11</strong> in a variable called <code>result</code>. Which line does that?",code:[],
-    opts:["<code>result = 5 + 3 * 2</code>","<code>result = (5 + 3) * 2</code>","<code>result = 5 * 3 + 2</code>","<code>result = 5 + 3 + 2</code>"],
+    fb:["Correct. It has the required pieces: <code>if</code>, a condition, a colon, and an indented line that belongs inside the <code>if</code> block.","The colon is missing. Python needs <code>:</code> before the indented block begins.","The colon is present, but the action line is not indented. Python cannot tell what belongs inside the <code>if</code> block.","Parentheses around the condition are optional, but the colon is not optional. This line is missing <code>:</code>."]},
+  {q:"Which line correctly stores the calculation in a variable named <code>result</code> without displaying it yet?",code:[],
+    opts:["<code>result = 5 + 3 * 2</code>","<code>print(5 + 3 * 2)</code>","<code>result: 5 + 3 * 2</code>","<code>result == 5 + 3 * 2</code>"],
     correct:0,area:'expressions',
-    fb:["Correct! Python follows math order of operations: multiplication first. So <code>3 * 2 = 6</code>, then <code>5 + 6 = 11</code>.","This gives 16. The parentheses force addition first: <code>(5+3)=8</code>, then <code>8*2=16</code>. Parentheses change the order!","This gives 17. <code>5*3=15</code>, then <code>15+2=17</code>. Close, but different operators.","This gives 10. <code>5+3+2=10</code>. All addition, no multiplication."]},
+    fb:["Correct. This stores the calculated value in <code>result</code>. It does not display anything until you write <code>print(result)</code>.","This displays the calculation on the screen, but it does not store the value in a variable named <code>result</code>.","A colon does not store the answer. Use <code>=</code> when you want Python to save a value in a variable.","<code>==</code> compares; it does not store. This asks whether <code>result</code> is equal to that expression, and it can also fail if <code>result</code> was never created."]},
   {q:"A student wrote four programs. Which one will <strong>cause an error</strong> when they click Run?",code:[],
     opts:[
       "<code>greeting = \"Hello\"<br>print(greeting)</code>",
@@ -303,12 +339,12 @@ const INTAKE=[
       "<code>name = \"Lina\"<br>print(\"Hi\", name)</code>"
     ],
     correct:2,area:'errors',
-    fb:["This code works perfectly — it stores a string and prints it.","This works too — it stores 10 and prints 15.","Correct! <code>message</code> was never created. Python tries to look it up, can't find it, and gives a <code>NameError</code>. You must create a variable before using it.","This works fine — it stores a name and prints a greeting."]},
-  {q:"Which code correctly asks the user to type their name and stores it in a variable?",code:[],
+    fb:["This works. The variable is created first, then printed.","This works. Python stores 10 in <code>x</code>, then calculates and displays 15.","Correct. <code>message</code> was never created. Python looks for that name, cannot find it, and raises a <code>NameError</code>.","This works. The variable is created first, then used in the <code>print()</code> statement."]},
+  {q:"Which code correctly asks the user to type their name and stores the response?",code:[],
     opts:["<code>name = input(\"Your name: \")</code>","<code>input(\"Your name: \") = name</code>","<code>name = ask(\"Your name: \")</code>","<code>name: input(\"Your name: \")</code>"],
     correct:0,area:'running',
-    fb:["Correct! <code>input()</code> displays the prompt, waits for the user to type, and the result is stored in <code>name</code> using <code>=</code>.","The variable must go on the left side of <code>=</code>. You can't put a function call on the left.","<code>ask</code> is not a Python function. Python uses <code>input()</code> to get user input.","A colon <code>:</code> doesn't store values — you need <code>=</code> for that. Colons are used after <code>if</code>, <code>def</code>, and other block starters."]}
-];
+    fb:["Correct. <code>input()</code> asks the user for information; <code>=</code> stores the typed response in <code>name</code>.","The storage name goes on the left side of <code>=</code>. A function call cannot be used as the storage container.","<code>ask()</code> is not the Python function used here. Use <code>input()</code>.","A colon does not save the response. Use <code>=</code> to store what the user typed."]}
+]
 
 let intakeStep=0;
 let intakeScore={variables:0,print:0,indent:0,expressions:0,errors:0,running:0};
@@ -352,7 +388,7 @@ function pickIntake(step,sel){
   const ok=sel===q.correct;
   if(ok){intakeScore[q.area]=1;addXP(5)}
   document.getElementById('chFb').innerHTML=`
-    <div class="ch-fb ${ok?'ok':'no'}"><strong>${ok?'✓ Nice one!':'Not quite — but that\'s why we\'re here!'}</strong> ${q.fb[sel]}</div>
+    <div class="ch-fb ${ok?'ok':'no'}"><strong>${ok?'✓ Correct.':'Not quite.'}</strong> ${q.fb[sel]}</div>
     <div style="text-align:center;margin-top:20px"><button class="btn btn-blue btn-sm" onclick="intakeStep++;renderIntakeStep()">Continue →</button></div>`;
 }
 
@@ -411,7 +447,7 @@ function showPrereqs(){
       ${prereqCard('running','▶️','Running Code','How Python executes your program',areas.running)}
     </div>
     <div style="text-align:center;margin-top:40px">
-      <button class="btn btn-green" onclick="showLab()">I'm Ready — Enter the Lab! →</button>
+      <button class="btn btn-green" onclick="showLab()">I'm Ready; Enter the Lab! →</button>
     </div>
   </div></div>`;
 }
@@ -427,45 +463,94 @@ function prereqCard(id,icon,title,desc,mastered){
 function showPrereqLesson(id){
   const lessons={
     variables:{title:'📦 Variables: Named Containers',body:`
-      <p>A <strong>variable</strong> stores a value and gives it a name. Think of it like a labeled box.</p>
+      <p>A <strong>variable</strong> stores a value and gives it a name. The name is how Python finds the value later.</p>
       ${cS(['age = 25','name = "Maya"','price = 9.99'])}
-      <p>The <code>=</code> sign means "store this value." It does NOT mean "equals" like in math — it means <strong>"put this in the box."</strong></p>
-      <p>After storing, you can use the name to get the value back:</p>
-      ${cS(['age = 25','print(age)  # shows 25'])}
+      ${explainBox('The single <code>=</code> means <em>store this value</em>. It is not the same as the math idea of equals. <code>age = 25</code> means: create the name <code>age</code> and place 25 inside it.')}
+      ${outputDemo(['age = 25','print(age)'],'25')}
+      <p>Python does not print the word <code>age</code>. It looks inside the variable named <code>age</code> and displays the stored value.</p>
+      ${Q('pv1','Which line compares age to 25 instead of storing 25 in age?', ['<code>age = 25</code>','<code>age == 25</code>','<code>25 = age</code>'],1,
+        ['This stores 25 in the variable <code>age</code>.','Correct. <code>==</code> asks whether two values are equal. It is used in comparisons, not storage.','This is invalid because the variable name must be on the left side of <code>=</code>.'],
+        '<code>=</code> stores. <code>==</code> compares. Students mix these up constantly, so make them say the difference out loud.')}
+      ${Q('pv2','After this code runs, what appears on the screen?', ['<code>age</code>','<code>25</code>','Nothing appears'],1,
+        ['That would happen only if you wrote <code>print("age")</code> with quotes.','Correct. <code>print(age)</code> opens the variable and displays the value stored inside it.','The <code>print()</code> command displays something. It displays the value inside <code>age</code>.'],
+        'When a name has no quotes, Python treats it as a variable name. When a word has quotes, Python treats it as literal text.', ['age = 25','print(age)'])}
     `},
-    print:{title:'📢 print(): Python Talks to You',body:`
-      <p><code>print()</code> displays a value on the screen. It's how your program communicates with the person running it.</p>
-      ${cS(['print("Hello!")     # shows: Hello!','print(42)           # shows: 42','name = "Maya"','print(name)         # shows: Maya'])}
-      <p>Notice: <code>print(name)</code> shows what's INSIDE the variable, not the word "name".</p>
+    print:{title:'📢 print(): What Python Shows on the Screen',body:`
+      <p><code>print()</code> displays something on the screen. It can display literal text, numbers, or the value inside a variable.</p>
+      ${outputDemo(['print("Hello!")'],'Hello!')}
+      ${outputDemo(['name = "Maya"','print(name)'],'Maya')}
+      ${explainBox('<code>print(name)</code> uses the variable. <code>print("name")</code> displays the exact word <em>name</em>. The quotes are the clue.')}
+      ${Q('pp1','Which line displays the exact word <strong>name</strong> instead of the value inside the variable?', ['<code>print(name)</code>','<code>print("name")</code>','<code>name = print()</code>'],1,
+        ['This looks inside the variable named <code>name</code>.','Correct. Quotes make Python display the exact text inside the quotes.','This is not how printing works. <code>print()</code> displays output; it is not used to create the variable here.'],
+        'Look for quotes. Quotes mean literal text. No quotes means Python searches for a variable by that name.')}
+      ${Q('pp2','A student writes <code>print(age)</code>, but never created <code>age</code>. What happens?', ['Python displays age','Python displays a blank screen','Python raises a NameError'],2,
+        ['Python does not display the word unless it is in quotes.','A missing variable is not blank; it is an error.','Correct. Python tries to find a variable named <code>age</code>. If it was never created, Python raises <code>NameError</code>.'],
+        'This is why variables must be created before they are printed or used.')}
     `},
-    indent:{title:'↔️ Indentation: Belonging',body:`
-      <p>In Python, <strong>indentation</strong> (4 spaces) tells Python which lines belong together inside a block.</p>
-      ${cS(['if age > 18:','    print("Adult")     # inside the if','    print("Can vote")   # also inside','print("Done")          # outside — always runs'])}
-      <p>Lines 2-3 are indented → they only run if the condition is true.<br>Line 4 is NOT indented → it runs no matter what.</p>
-      <p>This will become <strong>crucial</strong> when you write functions!</p>
+    indent:{title:'↔️ Indentation: What Belongs Inside',body:`
+      <p>In Python, indentation tells Python which lines belong inside a block. A block begins after a colon.</p>
+      ${cS(['if age >= 18:','    print("Adult")','    print("Can vote")','print("Done")'])}
+      ${braceDemo()}
+      ${explainBox('The indented lines belong inside the <code>if</code>. They run only when the condition is true. The line with no indentation is outside the <code>if</code>; it always runs.')}
+      ${outputDemo(['age = 20','if age >= 18:','    print("Adult")','    print("Can vote")','print("Done")'],'Adult\nCan vote\nDone')}
+      ${Q('pi1','If <code>age = 16</code>, which line still runs?', ['<code>print("Adult")</code>','<code>print("Can vote")</code>','<code>print("Done")</code>'],2,
+        ['This line is inside the <code>if</code>, so it does not run when age is 16.','This line is also inside the <code>if</code>, so it does not run when the condition is false.','Correct. This line is not indented, so it is outside the <code>if</code> block and always runs.'],
+        'Do not read the English only; read the spacing. In Python, spacing is structure.')}
+      ${Q('pi2','What error is most likely if a line after <code>if age >= 18:</code> is not indented?', ['NameError','IndentationError','TypeError'],1,
+        ['NameError means Python cannot find a name that was used.','Correct. Python expected an indented block after the colon.','TypeError means the operation is being used with the wrong kind of data.'],
+        'After a colon, Python expects an indented block. No indentation after the colon usually creates an IndentationError.')}
     `},
-    expressions:{title:'🔢 Expressions: Calculations',body:`
-      <p>Python follows standard math rules. Multiplication and division happen before addition and subtraction.</p>
-      ${cS(['print(5 + 3)      # 8','print(10 - 4)     # 6','print(3 * 7)      # 21','print(5 + 3 * 2)  # 11 (not 16!)'])}
-      <p><code>5 + 3 * 2</code> → Python does <code>3 * 2</code> first (=6), then <code>5 + 6</code> = 11.</p>
+    expressions:{title:'🔢 Expressions: Code First, Math Second',body:`
+      <p>An expression is a piece of code that Python can evaluate into a value. The important part here is not just the math; it is whether the code <strong>stores</strong> the value, <strong>prints</strong> the value, or only <strong>compares</strong> something.</p>
+      ${outputDemo(['result = 5 + 3 * 2','print(result)'],'11')}
+      ${explainBox('<code>result = 5 + 3 * 2</code> stores the answer. <code>print(result)</code> displays what was stored. If the question asks what is stored, do not choose the option that only prints.')}
+      ${Q('pe1','Which line stores the value but does not display it yet?', ['<code>result = 5 + 3 * 2</code>','<code>print(5 + 3 * 2)</code>','<code>result == 5 + 3 * 2</code>'],0,
+        ['Correct. The value is saved in <code>result</code>. Nothing appears on the screen until a print statement runs.','This displays the value; it does not store it in <code>result</code>.','This compares <code>result</code> to the expression. It does not store anything.'],
+        'Separate the action: store, display, or compare. That is the real coding skill here.')}
+      ${Q('pe2','Which pair both stores the result and then displays it?', ['<code>result = 5 + 3 * 2<br>print(result)</code>','<code>print = 5 + 3 * 2<br>result(print)</code>','<code>result == 5 + 3 * 2<br>print(result)</code>'],0,
+        ['Correct. First Python stores the calculated value in <code>result</code>; then it displays that stored value.','This misuses <code>print</code> as a variable name and then tries to call <code>result</code> like a function.','The first line compares instead of stores, so <code>result</code> may not exist when Python tries to print it.'],
+        'A correct two-line pattern often looks like: create the variable first, then print the variable.')}
     `},
-    errors:{title:'🚨 Error Messages: Python\'s Complaints',body:`
-      <p>Errors are <strong>normal</strong> and helpful. Python tells you exactly what went wrong.</p>
-      ${cS(['# NameError: you used a variable that doesn\'t exist','print(greeting)  # greeting was never created!','','# SyntaxError: something is misspelled or mistyped','print("Hello"    # forgot the closing )'])}
-      <p>When you see an error, read it like a clue: it tells you the <strong>type</strong> of problem and the <strong>line number</strong>.</p>
+    errors:{title:'🚨 Error Messages: Read the Complaint',body:`
+      <p>Error messages are not random. They tell you the type of problem Python found.</p>
+      <div class="error-grid">
+        <div class="err-card"><h4>NameError</h4><p>You used a variable or function name Python cannot find.</p></div>
+        <div class="err-card"><h4>SyntaxError</h4><p>The code is not written in valid Python grammar.</p></div>
+        <div class="err-card"><h4>IndentationError</h4><p>The spacing does not match the block structure Python expects.</p></div>
+      </div>
+      ${outputDemo(['print(greeting)'],'NameError: name \'greeting\' is not defined','This will display on your screen as an error message')}
+      ${explainBox('<code>greeting</code> was never created. Python cannot print the value inside a variable if the variable does not exist.')}
+      ${outputDemo(['print("Hello"'],'SyntaxError: ( was never closed','This will display on your screen as an error message')}
+      ${explainBox('Python sees an opening parenthesis, but it never sees the closing parenthesis. That is a grammar problem, so it is a <code>SyntaxError</code>.')}
+      ${Q('per1','Which code would create <code>NameError: name \'score\' is not defined</code>?', ['<code>score = 90<br>print(score)</code>','<code>print(score)</code>','<code>print("score")</code>'],1,
+        ['This works because <code>score</code> is created before it is printed.','Correct. Python is asked to print <code>score</code>, but no variable named <code>score</code> was created first.','This prints the literal word score. Quotes prevent Python from looking for a variable.'],
+        'If the name is unquoted and was never created, expect NameError.')}
+      ${Q('per2','Which code would most likely create a SyntaxError?', ['<code>print("Hello")</code>','<code>print("Hello"</code>','<code>message = "Hello"</code>'],1,
+        ['This is valid. The parentheses and quotes are closed.','Correct. The closing parenthesis is missing, so Python cannot parse the line.','This validly stores the text Hello in the variable <code>message</code>.'],
+        'Syntax errors are grammar errors: missing colon, missing parenthesis, missing quote, or invalid structure.')}
+      ${Q('per3','Which code would most likely create an IndentationError?', ['<code>if age > 18:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Adult")</code>','<code>if age > 18:<br>print("Adult")</code>','<code>age = 18<br>print(age)</code>'],1,
+        ['This is valid because the action line is indented.','Correct. After the colon, Python expects the next block line to be indented.','This has no block, so there is no indentation issue.'],
+        'A colon opens a block. The next line that belongs inside must be indented.')}
     `},
     running:{title:'▶️ Running Code: Top to Bottom',body:`
-      <p>When you click Run, Python reads your code <strong>from top to bottom</strong>, one line at a time.</p>
-      ${cS(['print("First")   # runs 1st','print("Second")  # runs 2nd','print("Third")   # runs 3rd'])}
-      <p>This order matters! If you try to use a variable before creating it, Python hasn't seen it yet — and you get an error.</p>
+      <p>When you click Run, Python reads your code from top to bottom, one line at a time. A later line cannot use something that has not been created yet.</p>
+      ${outputDemo(['print("First")','print("Second")','print("Third")'],'First\nSecond\nThird')}
+      ${outputDemo(['print(total)','total = 100'],'NameError: name \'total\' is not defined','This will display on your screen as an error message')}
+      ${explainBox('Python reaches <code>print(total)</code> before it reaches <code>total = 100</code>. At that moment, <code>total</code> does not exist yet.')}
+      ${Q('pr1','Which version runs without an error?', ['<code>print(total)<br>total = 100</code>','<code>total = 100<br>print(total)</code>','<code>total == 100<br>print(total)</code>'],1,
+        ['This fails because Python tries to print <code>total</code> before creating it.','Correct. The variable is created first, then displayed.','<code>==</code> compares instead of stores, so this does not create <code>total</code>.'],
+        'Python is not guessing ahead. It follows the lines in order.')}
+      ${Q('pr2','What appears on the screen?', ['<code>A<br>B</code>','<code>B<br>A</code>','Nothing appears'],0,
+        ['Correct. Python runs the first print statement, then the second print statement.','Python does not start from the bottom. It runs top to bottom.','Both lines are print statements, so both display output.'],
+        'For ordinary code, read from top to bottom unless a function call, loop, or condition changes the path.', ['print("A")','print("B")'])}
     `}
   };
   const l=lessons[id];
   document.getElementById('app').innerHTML=`
   <div style="padding:60px 0"><div class="wrap">
     <div class="back-link" onclick="showPrereqs()">← Back to Foundation</div>
-    <div class="teach blue" style="max-width:750px"><h3>${l.title}</h3>${l.body}
-    <div style="margin-top:24px;text-align:center"><button class="btn btn-sm btn-green" onclick="S.intake.areas.${id}=true;save();addXP(10);showPrereqs()">✓ Got It!</button></div></div>
+    <div class="teach blue" style="max-width:820px"><h3>${l.title}</h3>${l.body}
+    <div style="margin-top:24px;text-align:center"><button class="btn btn-sm btn-green" onclick="S.intake.areas.${id}=true;save();addXP(10);showPrereqs()">✓ Got It</button></div></div>
   </div></div>`;
 }
 
@@ -497,7 +582,7 @@ function showLab(){
     <div style="margin-bottom:40px">
       <p style="font-size:15px;color:var(--blue);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">⚗️ ${S.name}'s Laboratory</p>
       <h1 style="font-weight:900;font-size:clamp(32px,5vw,48px);margin-bottom:12px">Function Lab Stations</h1>
-      <p style="color:var(--text2);font-size:18px;max-width:600px">Each station builds on the last. Start at Station 1 and work your way through. Take your time — this is your lab.</p>
+      <p style="color:var(--text2);font-size:18px;max-width:600px">Each station builds on the last. Start at Station 1 and work your way through. Take your time; this is your lab.</p>
     </div>
     <div class="sgrid" id="grid"></div>
   </div></div>`;
@@ -535,7 +620,7 @@ function Q(id,q,opts,cor,rats,str,codeLs){
   x+=`<div class="quiz-q">${q}</div>`;
   opts.forEach((o,i)=>{const cl=dn?(i===cor?'ok dn':(i===pv&&pv!==cor?'no dn':'dn')):'';x+=`<div class="qo ${cl}" onclick="pQ('${id}',${i})">${o}</div>`});
   x+=`<div id="qf-${id}">`;if(dn)x+=qfb(id,pv);x+=`</div></div>`;return x}
-function qfb(id,sel){const d=QD[id];if(!d)return'';const ok=sel===d.cor;let x=`<div class="qfb ${ok?'qok':'qno'}"><strong>${ok?'✓ Correct!':'✗ Not quite.'}</strong> ${d.rats[sel]}</div>`;if(d.str)x+=`<div class="strat"><b>📚 Strategy from Hilary:</b> ${d.str}</div>`;return x}
+function qfb(id,sel){const d=QD[id];if(!d)return'';const ok=sel===d.cor;let x=`<div class="qfb ${ok?'qok':'qno'}"><strong>${ok?'✓ Correct.':'Not quite.'}</strong> ${d.rats[sel]}</div>`;if(d.str)x+=`<div class="strat"><b>📚 Strategy from Hilary:</b> ${d.str}</div>`;return x}
 function pQ(id,sel){if(S.ans[id]!==undefined)return;S.ans[id]=sel;save();const d=QD[id],ok=sel===d.cor;if(ok)addXP(10);const w=document.getElementById('q-'+id);w.querySelectorAll('.qo').forEach((o,i)=>{o.classList.add('dn');if(i===d.cor)o.classList.add('ok');if(i===sel&&sel!==d.cor)o.classList.add('no')});document.getElementById('qf-'+id).innerHTML=qfb(id,sel)}
 
 // ══════════════════════════════════════
@@ -545,7 +630,7 @@ function getStation(i){return[st0,st1,st2,st3,st4,st5,st6,st7,st8,st9,st10,st11]
 function initSt(i){if(i===3)initSt3();if(i===4)initSt4()}
 
 function st0(){return`
-<div class="teach purple"><h3>🤔 Before we teach you anything — look at this:</h3>
+<div class="teach purple"><h3>🤔 Before we teach you anything; look at this:</h3>
 <p>Imagine you're writing a program to calculate pay for 100 employees. For each employee you need to: ask their rate, ask their hours, calculate gross pay, calculate overtime, calculate tax, calculate net pay, and print a paycheck.</p>
 <p style="color:var(--orange);font-weight:700;font-size:19px">That's 7 steps × 100 employees = 700 lines of repeated code.</p>
 <p>What if there's a bug in the tax calculation? You'd have to find and fix it in <strong>100 different places</strong>.</p>
@@ -572,15 +657,15 @@ ${Q('s0q1','A colleague copy-pastes 20 lines in 5 places. What is the biggest ri
 function ckFn(id){const inp=document.getElementById(id),v=inp.value.trim().toLowerCase().replace(/[()]/g,'').replace(/ /g,'_'),fb=document.getElementById(id+'-fb');
 if(!v){fb.innerHTML='<span style="color:var(--orange)">Type a name!</span>';return}
 if(/^\d/.test(v)){fb.innerHTML='<span style="color:var(--red)">❌ Can\'t start with number</span>';return}
-if(/\s/.test(v)){fb.innerHTML='<span style="color:var(--red)">❌ No spaces — use underscores</span>';return}
+if(/\s/.test(v)){fb.innerHTML='<span style="color:var(--red)">❌ No spaces; use underscores</span>';return}
 const hasVerb=/^(get|ask|calc|compute|show|display|print|check|find|determine|input|read|make|create|build|greet|format|generate)/.test(v);
 if(hasVerb&&v.length>4){fb.innerHTML='<span style="color:var(--green)">✅ Great name!</span>';inp.classList.add('iok');addXP(5)}
-else if(v.length<=3)fb.innerHTML='<span style="color:var(--orange)">⚠️ Too short — try verb+noun like get_name</span>';
+else if(v.length<=3)fb.innerHTML='<span style="color:var(--orange)">⚠️ Too short; try verb+noun like get_name</span>';
 else fb.innerHTML='<span style="color:var(--orange)">⚠️ Try starting with a verb (get_, calc_, show_)</span>'}
 
 function st1(){return`
 <div class="teach purple"><h3>🤔 Prediction Time</h3>
-<p>Look at this code. <strong>Before reading the explanation</strong> — what do you think each part does?</p>
+<p>Look at this code. <strong>Before reading the explanation</strong>; what do you think each part does?</p>
 <div class="code" style="font-size:20px;line-height:2.6;cursor:pointer">
 <span class="line"><span class="ln">1</span><span onclick="sP('kw')" style="border-bottom:3px solid var(--purple);cursor:pointer"><span class="kw">def</span></span> <span onclick="sP('nm')" style="border-bottom:3px solid var(--blue);cursor:pointer"><span class="fn">greet</span></span><span onclick="sP('pr')" style="border-bottom:3px solid var(--cyan);cursor:pointer">(<span class="pm">name</span>)</span><span onclick="sP('co')" style="border-bottom:3px solid var(--orange);cursor:pointer">:</span></span>
 <span class="line" onclick="sP('bd')" style="cursor:pointer"><span class="ln">2</span>    <span class="bi">print</span>(<span class="st">"Hello"</span>, name)</span>
@@ -597,7 +682,7 @@ function st1(){return`
 </div><button class="btn btn-sm btn-blue" style="margin-top:16px" onclick="ckBF()">Check My Function</button><div id="bf-fb" style="margin-top:14px"></div></div>
 `}
 
-function sP(p){const m={kw:{t:'<span style="color:var(--purple)">def</span>',d:'Tells Python: "I\'m creating a new function." It STORES instructions but does NOT run them yet.'},nm:{t:'<span style="color:var(--blue)">greet</span>',d:'The function\'s name. This is how other code calls it. Use descriptive lowercase names with underscores.'},pr:{t:'<span style="color:var(--cyan)">(name)</span>',d:'A parameter — a variable that receives data when the function is called. Like a mailbox slot.'},co:{t:'<span style="color:var(--orange)">:</span>',d:'Required! Tells Python an indented block follows. Forgetting this = the #1 syntax error.'},bd:{t:'<span style="color:var(--green)">print("Hello", name)</span>',d:'The function body. Every indented line belongs to this function. This is the work it does when called.'}};const i=m[p];document.getElementById('pI').innerHTML=`<div class="teach blue" style="margin:0"><h3>${i.t}</h3><p>${i.d}</p></div>`}
+function sP(p){const m={kw:{t:'<span style="color:var(--purple)">def</span>',d:'Tells Python: "I\'m creating a new function." It STORES instructions but does NOT run them yet.'},nm:{t:'<span style="color:var(--blue)">greet</span>',d:'The function\'s name. This is how other code calls it. Use descriptive lowercase names with underscores.'},pr:{t:'<span style="color:var(--cyan)">(name)</span>',d:'A parameter; a variable that receives data when the function is called. Like a mailbox slot.'},co:{t:'<span style="color:var(--orange)">:</span>',d:'Required! Tells Python an indented block follows. Forgetting this = the #1 syntax error.'},bd:{t:'<span style="color:var(--green)">print("Hello", name)</span>',d:'The function body. Every indented line belongs to this function. This is the work it does when called.'}};const i=m[p];document.getElementById('pI').innerHTML=`<div class="teach blue" style="margin:0"><h3>${i.t}</h3><p>${i.d}</p></div>`}
 
 function ckBF(){const n=document.getElementById('bf1').value.trim(),p=document.getElementById('bf2').value.trim(),e=document.getElementById('bf3').value.trim(),r=document.getElementById('bf4').value,fb=document.getElementById('bf-fb');let iss=[];
 if(!n)iss.push('Name your function (like <code>to_celsius</code>).');
@@ -609,12 +694,12 @@ else fb.innerHTML=`<div class="qfb qno"><strong>Almost!</strong> ${iss.join(' ')
 
 function st2(){return`
 <div class="teach purple"><h3>🤔 Prediction: What will this print?</h3>
-<p>Don't read ahead — just look at the code and make your best guess:</p>
+<p>Don't read ahead; just look at the code and make your best guess:</p>
 ${cS(['def add(a, b):','    print(a + b)','','result = add(2, 3)','print("result is:", result)'])}
 </div>
 ${Q('s2pred','What will appear on the screen?',
   ['Just the number 5','5 and then "result is: 5"','5 and then "result is: None"','An error'],2,
-  ['5 does appear first, but there is a second line...','This would be true if the function used return. But it used print instead!','Correct! The function prints 5 (line 2), but never returns a value. So result is None. This is THE most important distinction: print ≠ return.','No error — it runs, just gives a surprising result.'],
+  ['5 does appear first, but there is a second line...','This would be true if the function used return. But it used print instead!','Correct! The function prints 5 (line 2), but never returns a value. So result is None. This is THE most important distinction: print ≠ return.','No error; it runs, just gives a surprising result.'],
   'print() shouts to the screen. return hands a value back to the caller. They are completely different operations. This is the #1 trap for beginners.')}
 
 <div class="two" style="margin:28px 0">
@@ -631,8 +716,8 @@ function st3(){return`
 ${cS(['def main():','    print("Step 1")','    do_work()','    print("Step 3")','','def do_work():','    print("Step 2")','','main()'])}
 <p>What order do you think the steps print?</p></div>
 ${Q('s3pred','What is the output order?',
-  ['Step 1, Step 2, Step 3','Step 2, Step 1, Step 3','Nothing — main is never called','Step 1, Step 3, Step 2'],0,
-  ['Correct! main() runs first, prints Step 1, calls do_work() which prints Step 2, returns, then prints Step 3.','do_work() only runs when main() calls it on line 3.','Look at line 9 — main() IS called!','Step 2 happens DURING main, between Steps 1 and 3.'],
+  ['Step 1, Step 2, Step 3','Step 2, Step 1, Step 3','Nothing; main is never called','Step 1, Step 3, Step 2'],0,
+  ['Correct! main() runs first, prints Step 1, calls do_work() which prints Step 2, returns, then prints Step 3.','do_work() only runs when main() calls it on line 3.','Look at line 9; main() IS called!','Step 2 happens DURING main, between Steps 1 and 3.'],
   'main() is the boss. It delegates to workers (other functions) in order.')}
 <div class="teach blue"><h3>🎬 Watch It Happen</h3>
 <div id="wk" style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:20px 0"></div>
@@ -642,11 +727,11 @@ ${Q('s3pred','What is the output order?',
 
 function initSt3(){const w=document.getElementById('wk');if(!w)return;['do_work()'].forEach(fn=>{const d=document.createElement('div');d.id='w-'+fn.replace(/[()]/g,'');d.style.cssText='padding:16px 26px;background:rgba(255,255,255,0.04);border:2px solid var(--border);border-radius:14px;font-family:var(--mono);font-size:15px;font-weight:600;transition:all .5s';d.textContent=fn;w.appendChild(d)})}
 function rBoss(){const log=document.getElementById('bL');document.getElementById('rB').disabled=true;log.innerHTML='<div class="out-label">Execution Log</div>';
-[{m:'→ Python stores main() and do_work()...',c:'var(--text2)',t:500},{m:'→ Line 9: main() called!',c:'var(--blue)',t:1200},{m:'  → print("Step 1")',c:'var(--green)',t:1900},{m:'  → do_work() called — jumping!',c:'var(--purple)',t:2600,w:'do_work'},{m:'    → print("Step 2")',c:'var(--green)',t:3300},{m:'  ← Returned to main()',c:'var(--yellow)',t:4000,w:'do_work',d:1},{m:'  → print("Step 3")',c:'var(--green)',t:4700},{m:'✅ Done!',c:'var(--yellow)',t:5400}].forEach(s=>{setTimeout(()=>{log.innerHTML+=`<div style="color:${s.c};font-size:15px">${s.m}</div>`;if(s.w){const e=document.getElementById('w-'+s.w);if(e){e.style.borderColor=s.d?'var(--green)':'var(--blue)';e.style.background=s.d?'rgba(78,205,196,0.1)':'rgba(91,141,238,0.1)'}}if(s.t===5400){document.getElementById('rB').disabled=false;addXP(10)}log.scrollTop=log.scrollHeight},s.t)})}
+[{m:'→ Python stores main() and do_work()...',c:'var(--text2)',t:500},{m:'→ Line 9: main() called!',c:'var(--blue)',t:1200},{m:'  → print("Step 1")',c:'var(--green)',t:1900},{m:'  → do_work() called; jumping!',c:'var(--purple)',t:2600,w:'do_work'},{m:'    → print("Step 2")',c:'var(--green)',t:3300},{m:'  ← Returned to main()',c:'var(--yellow)',t:4000,w:'do_work',d:1},{m:'  → print("Step 3")',c:'var(--green)',t:4700},{m:'✅ Done!',c:'var(--yellow)',t:5400}].forEach(s=>{setTimeout(()=>{log.innerHTML+=`<div style="color:${s.c};font-size:15px">${s.m}</div>`;if(s.w){const e=document.getElementById('w-'+s.w);if(e){e.style.borderColor=s.d?'var(--green)':'var(--blue)';e.style.background=s.d?'rgba(78,205,196,0.1)':'rgba(91,141,238,0.1)'}}if(s.t===5400){document.getElementById('rB').disabled=false;addXP(10)}log.scrollTop=log.scrollHeight},s.t)})}
 function resetB(){document.getElementById('bL').innerHTML='<div class="out-label">Execution Log</div><div style="color:var(--text3)">Click Run...</div>';const e=document.getElementById('w-do_work');if(e){e.style.borderColor='var(--border)';e.style.background='rgba(255,255,255,0.04)'}}
 
 const EL=['def main():','    print("I have a message.")','    message()','    print("Goodbye!")','','def message():','    print("I am Arthur,")','    print("King of the Britons.")','','main()'];
-const ES=[{ln:0,x:'Stores main(). Does NOT run.',tag:'d',o:''},{ln:5,x:'Stores message().',tag:'d',o:''},{ln:9,x:'main() CALLED — jump in!',tag:'c',o:''},{ln:1,x:'print("I have a message.")',tag:'e',o:'I have a message.'},{ln:2,x:'message() called — JUMP!',tag:'c',o:''},{ln:6,x:'print("I am Arthur,")',tag:'e',o:'I am Arthur,'},{ln:7,x:'print("King of the Britons.")',tag:'e',o:'King of the Britons.'},{ln:2,x:'message() done — return to main()',tag:'r',o:''},{ln:3,x:'print("Goodbye!")',tag:'e',o:'Goodbye!'},{ln:9,x:'Done! 🎉',tag:'r',o:''}];
+const ES=[{ln:0,x:'Stores main(). Does NOT run.',tag:'d',o:''},{ln:5,x:'Stores message().',tag:'d',o:''},{ln:9,x:'main() CALLED; jump in!',tag:'c',o:''},{ln:1,x:'print("I have a message.")',tag:'e',o:'I have a message.'},{ln:2,x:'message() called; JUMP!',tag:'c',o:''},{ln:6,x:'print("I am Arthur,")',tag:'e',o:'I am Arthur,'},{ln:7,x:'print("King of the Britons.")',tag:'e',o:'King of the Britons.'},{ln:2,x:'message() done; return to main()',tag:'r',o:''},{ln:3,x:'print("Goodbye!")',tag:'e',o:'Goodbye!'},{ln:9,x:'Done! 🎉',tag:'r',o:''}];
 let eS=-1,eO='';
 
 function st4(){return`
@@ -678,7 +763,7 @@ function st6(){return`
 <div class="teach green"><h3>🤔 Prediction: What happens here?</h3>
 ${cS(['def double(n):','    return n * 2','','result = double(double(3))','print(result)'])}
 </div>
-${Q('s6q1','What is printed?',['6','12','9','Error — can\'t nest calls'],1,
+${Q('s6q1','What is printed?',['6','12','9','Error; can\'t nest calls'],1,
   ['That\'s just double(3). But we pass THAT into double again!','Correct! Inner first: double(3)→6. Outer: double(6)→12. Inside-out!','Would be 3×3. double does ×2.','Nesting works perfectly!'],
   'Nested calls: evaluate from INSIDE OUT.')}
 `}
@@ -688,7 +773,7 @@ function st7(){return`
 ${cS(['def set_value():','    x = 42','','set_value()','','print(x)'])}
 </div>
 ${Q('s7q1','What happens when line 6 runs?',['Prints 42','Prints None','NameError: x is not defined','Prints 0'],2,
-  ['x was born inside the function — it died when the function ended.','x doesn\'t even exist outside the function.','Correct! x is LOCAL to set_value(). When the function ended, x was destroyed. Outside, it doesn\'t exist.','x was never 0.'],
+  ['x was born inside the function; it died when the function ended.','x doesn\'t even exist outside the function.','Correct! x is LOCAL to set_value(). When the function ended, x was destroyed. Outside, it doesn\'t exist.','x was never 0.'],
   'Where was x born? Inside the function. It lives and dies there.')}
 `}
 
@@ -710,7 +795,7 @@ function st9(){return`
 <div class="teach green"><h3>📦 Modules: Python's Toolkits</h3>
 <p>A <strong>module</strong> is a file of pre-built Python code. Import it, then use <strong>dot notation</strong>:</p>
 ${cS(['import math','print(math.sqrt(16))  # 4.0','print(math.pi)        # 3.14159...','','import random','print(random.randint(1, 10))  # random number 1-10'])}
-<p><code>math.pi</code> is a <strong>variable</strong>, not a function — no parentheses!</p>
+<p><code>math.pi</code> is a <strong>variable</strong>, not a function; no parentheses!</p>
 <div style="margin-top:20px"><button class="btn btn-sm btn-pink" onclick="document.getElementById('dR').textContent=Math.floor(Math.random()*10)+1">🎲 Roll random.randint(1, 10)!</button><div id="dR" style="margin-top:12px;font-family:var(--mono);font-size:32px;font-weight:800;color:var(--yellow);min-height:48px"></div></div></div>
 
 ${Q('s9q1','How to call sqrt from math?',['sqrt(16)','math.sqrt(16)','math(sqrt,16)','import sqrt'],1,
@@ -725,7 +810,7 @@ ${Q('s10q1','Which function should control the overall program flow?',['get_rate
   ['Only handles one input.','Only one calculation.','Correct! main() orchestrates: get inputs → calculate → display.','Only the final display.'],
   'main() is the boss who calls workers in order.')}
 ${Q('s10q2','calc_gross_pay() uses print() instead of return. What breaks?',['Nothing','main() can\'t pass the value forward','Crash','Calculated twice'],1,
-  ['There IS a problem.','Correct! Print displays then the value is gone. main() gets None.','Doesn\'t crash — just wrong results.','Only calculated once, but lost.'],
+  ['There IS a problem.','Correct! Print displays then the value is gone. main() gets None.','Doesn\'t crash; just wrong results.','Only calculated once, but lost.'],
   'If other functions need the value, you MUST return it.')}
 `}
 
