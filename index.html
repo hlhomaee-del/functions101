@@ -191,11 +191,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .dotstream:after{content:'➜';color:var(--yellow);font-size:24px;font-weight:900;margin-left:8px;animation:arrowPush 1.8s infinite ease-in-out}
 @keyframes dotPulse{0%,100%{transform:scale(.7);opacity:.2}45%{transform:scale(1.35);opacity:1}}
 @keyframes arrowPush{0%,100%{transform:translateX(0);opacity:.45}50%{transform:translateX(10px);opacity:1}}
-.monitor{background:#050812;border:3px solid rgba(78,205,196,0.35);border-radius:16px;min-width:220px;min-height:110px;box-shadow:0 0 28px rgba(64,224,208,.1), inset 0 0 25px rgba(64,224,208,.04);position:relative;padding:34px 20px 20px;text-align:center;font-family:var(--mono)}
-.monitor:before{content:attr(data-label);position:absolute;top:8px;left:12px;right:12px;text-align:center;font-family:var(--font);font-weight:900;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--cyan)}
+.monitor-wrap{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:220px}
+.output-label-row{display:flex;justify-content:flex-end;margin:8px 0 8px 0;padding-right:18%}
+.screen-label{display:inline-flex;align-items:center;background:rgba(64,224,208,.16);border:1px solid rgba(64,224,208,.42);color:var(--cyan);border-radius:999px;padding:6px 14px;font-family:var(--font);font-weight:900;font-size:12px;letter-spacing:.7px;text-transform:uppercase;line-height:1.2;box-shadow:0 0 16px rgba(64,224,208,.12)}
+.monitor{background:#050812;border:3px solid rgba(78,205,196,0.35);border-radius:16px;min-width:220px;min-height:110px;box-shadow:0 0 28px rgba(64,224,208,.1), inset 0 0 25px rgba(64,224,208,.04);position:relative;padding:20px;text-align:center;font-family:var(--mono)}
 .monitor .screen-value{display:block;color:var(--green);font-size:26px;font-weight:900;animation:riseValue 1.5s infinite ease-in-out;text-align:left;white-space:normal}
 .monitor .screen-line{display:block;line-height:1.55}
-.monitor .screen-error{display:block;color:var(--red);font-size:15px;line-height:1.6;text-align:left;white-space:pre-wrap;animation:riseValue 1.5s infinite ease-in-out}
+.monitor .screen-error{display:block;color:var(--red);font-size:17px;line-height:1.6;text-align:left;white-space:pre-wrap;word-break:break-word;animation:riseValue 1.5s infinite ease-in-out}
 @keyframes riseValue{0%{opacity:.2;transform:translateY(14px) scale(.96)}45%,80%{opacity:1;transform:translateY(0) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
 .note-box{background:rgba(255,215,64,0.07);border:2px solid rgba(255,215,64,0.18);border-radius:16px;padding:18px 20px;margin:18px 0;color:var(--text2)}
 .note-box strong{color:var(--yellow)}
@@ -210,7 +212,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .err-card{background:rgba(255,82,82,.06);border:2px solid rgba(255,82,82,.15);border-radius:16px;padding:16px}
 .err-card h4{color:var(--red);font-size:17px;margin-bottom:6px}.err-card p{font-size:15px;margin:0;color:var(--text2)}
 
-@media(max-width:640px){.sgrid{grid-template-columns:1fr}.wrap,.wrap-wide{padding:0 16px}.phase-card,.challenge{padding:28px}}
+@media(max-width:640px){.sgrid{grid-template-columns:1fr}.wrap,.wrap-wide{padding:0 16px}.phase-card,.challenge{padding:28px}.output-label-row{justify-content:center;padding-right:0}.flow-row{justify-content:center}.monitor{width:100%}}
 </style>
 </head>
 <body>
@@ -230,7 +232,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <main id="app"></main>
 
-<footer class="foot"><div class="wrap">Instructional design by <span>Hilary Homaii</span></div></footer>
+<footer class="foot"><div class="wrap">Instructional design for educational use</div></footer>
 
 <script>
 // ══════════════════════════════════════
@@ -272,7 +274,7 @@ function hl(t){
 function cS(ls){return`<div class="code">${ls.map((l,i)=>`<span class="line"><span class="ln">${i+1}</span>${hl(l||' ')}</span>`).join('\n')}</div>`}
 
 function escHTML(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function outputDemo(codeLines, output, label='Your screen will display'){
+function outputDemo(codeLines, output, label='This is what your screen will display'){
   const isError = /Error|Traceback|invalid syntax|not defined/i.test(output);
   let value;
   if(isError){
@@ -281,7 +283,8 @@ function outputDemo(codeLines, output, label='Your screen will display'){
     const lines = String(output).split(/\n/).map(line=>`<span class="screen-line">${escHTML(line)}</span>`).join('');
     value = `<span class="screen-value">${lines}</span>`;
   }
-  return `<div class="output-demo">${cS(codeLines)}<div class="flow-row"><div class="dotstream"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="monitor" data-label="${label}">${value}</div></div></div>`;
+  const labelText = label.includes('Python output') ? label : `${label} (Python output)`;
+  return `<div class="output-demo">${cS(codeLines)}<div class="output-label-row"><div class="screen-label">${escHTML(labelText)}</div></div><div class="flow-row"><div class="dotstream"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="monitor-wrap"><div class="monitor">${value}</div></div></div></div>`;
 }
 function explainBox(text){return `<div class="note-box"><strong>What this means:</strong> ${text}</div>`}
 function braceDemo(){return `<div class="brace-demo"><div class="brace-inside"><div class="curly-brace">{</div><div class="brace-lines"><div class="brace-line">print("Adult") <span style="color:var(--green)">inside the if</span></div><div class="brace-line">print("Can vote") <span style="color:var(--green)">also inside</span></div></div></div><div class="always-line">print("Done") <span style="color:var(--yellow)">not inside the if; no indentation, so it always runs</span></div><div class="note-box"><strong>Notice:</strong> The purple bracket only includes the two indented lines. <code>print("Done")</code> is outside the bracket because it is not indented.</div></div>`}
@@ -527,9 +530,9 @@ function showPrereqLesson(id){
         <div class="err-card"><h4>SyntaxError</h4><p>The code is not written in valid Python grammar.</p></div>
         <div class="err-card"><h4>IndentationError</h4><p>The spacing does not match the block structure Python expects.</p></div>
       </div>
-      ${outputDemo(['print(greeting)'],'NameError: name \'greeting\' is not defined','This will display on your screen as an error message')}
+      ${outputDemo(['print(greeting)'],'NameError: name \'greeting\' is not defined','This is what your screen will display as an error message')}
       ${explainBox('<code>greeting</code> was never created. Python cannot print the value inside a variable if the variable does not exist.')}
-      ${outputDemo(['print("Hello"'],'SyntaxError: ( was never closed','This will display on your screen as an error message')}
+      ${outputDemo(['print("Hello"'],'SyntaxError: ( was never closed','This is what your screen will display as an error message')}
       ${explainBox('Python sees an opening parenthesis, but it never sees the closing parenthesis. That is a grammar problem, so it is a <code>SyntaxError</code>.')}
       ${Q('per1','Which code would create <code>NameError: name \'score\' is not defined</code>?', ['<code>score = 90<br>print(score)</code>','<code>print(score)</code>','<code>print("score")</code>'],1,
         ['This works because <code>score</code> is created before it is printed.','Correct. Python is asked to print <code>score</code>, but no variable named <code>score</code> was created first.','This prints the literal word score. Quotes prevent Python from looking for a variable.'],
@@ -544,7 +547,7 @@ function showPrereqLesson(id){
     running:{title:'▶️ Running Code: Top to Bottom',body:`
       <p>When you click Run, Python reads your code from top to bottom, one line at a time. A later line cannot use something that has not been created yet.</p>
       ${outputDemo(['print("First")','print("Second")','print("Third")'],'First\nSecond\nThird')}
-      ${outputDemo(['print(total)','total = 100'],'NameError: name \'total\' is not defined','This will display on your screen as an error message')}
+      ${outputDemo(['print(total)','total = 100'],'NameError: name \'total\' is not defined','This is what your screen will display as an error message')}
       ${explainBox('Python reaches <code>print(total)</code> before it reaches <code>total = 100</code>. At that moment, <code>total</code> does not exist yet.')}
       ${Q('pr1','Which version runs without an error?', ['<code>print(total)<br>total = 100</code>','<code>total = 100<br>print(total)</code>','<code>total == 100<br>print(total)</code>'],1,
         ['This fails because Python tries to print <code>total</code> before creating it.','Correct. The variable is created first, then displayed.','<code>==</code> compares instead of stores, so this does not create <code>total</code>.'],
@@ -629,7 +632,7 @@ function Q(id,q,opts,cor,rats,str,codeLs){
   x+=`<div class="quiz-q">${q}</div>`;
   opts.forEach((o,i)=>{const cl=dn?(i===cor?'ok dn':(i===pv&&pv!==cor?'no dn':'dn')):'';x+=`<div class="qo ${cl}" onclick="pQ('${id}',${i})">${o}</div>`});
   x+=`<div id="qf-${id}">`;if(dn)x+=qfb(id,pv);x+=`</div></div>`;return x}
-function qfb(id,sel){const d=QD[id];if(!d)return'';const ok=sel===d.cor;let x=`<div class="qfb ${ok?'qok':'qno'}"><strong>${ok?'✓ Correct.':'Not quite.'}</strong> ${d.rats[sel]}</div>`;if(d.str)x+=`<div class="strat"><b>📚 Strategy from Hilary:</b> ${d.str}</div>`;return x}
+function qfb(id,sel){const d=QD[id];if(!d)return'';const ok=sel===d.cor;let x=`<div class="qfb ${ok?'qok':'qno'}"><strong>${ok?'✓ Correct.':'Not quite.'}</strong> ${d.rats[sel]}</div>`;if(d.str)x+=`<div class="strat"><b>📚 Strategy:</b> ${d.str}</div>`;return x}
 function pQ(id,sel){if(S.ans[id]!==undefined)return;S.ans[id]=sel;save();const d=QD[id],ok=sel===d.cor;if(ok)addXP(10);const w=document.getElementById('q-'+id);w.querySelectorAll('.qo').forEach((o,i)=>{o.classList.add('dn');if(i===d.cor)o.classList.add('ok');if(i===sel&&sel!==d.cor)o.classList.add('no')});document.getElementById('qf-'+id).innerHTML=qfb(id,sel)}
 
 // ══════════════════════════════════════
