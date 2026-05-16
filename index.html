@@ -193,17 +193,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @keyframes arrowPush{0%,100%{transform:translateX(0);opacity:.45}50%{transform:translateX(10px);opacity:1}}
 .monitor{background:#050812;border:3px solid rgba(78,205,196,0.35);border-radius:16px;min-width:220px;min-height:110px;box-shadow:0 0 28px rgba(64,224,208,.1), inset 0 0 25px rgba(64,224,208,.04);position:relative;padding:34px 20px 20px;text-align:center;font-family:var(--mono)}
 .monitor:before{content:attr(data-label);position:absolute;top:8px;left:12px;right:12px;text-align:center;font-family:var(--font);font-weight:900;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--cyan)}
-.monitor .screen-value{display:inline-block;color:var(--green);font-size:26px;font-weight:900;animation:riseValue 1.5s infinite ease-in-out}
+.monitor .screen-value{display:block;color:var(--green);font-size:26px;font-weight:900;animation:riseValue 1.5s infinite ease-in-out;text-align:left;white-space:normal}
+.monitor .screen-line{display:block;line-height:1.55}
 .monitor .screen-error{display:block;color:var(--red);font-size:15px;line-height:1.6;text-align:left;white-space:pre-wrap;animation:riseValue 1.5s infinite ease-in-out}
 @keyframes riseValue{0%{opacity:.2;transform:translateY(14px) scale(.96)}45%,80%{opacity:1;transform:translateY(0) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
 .note-box{background:rgba(255,215,64,0.07);border:2px solid rgba(255,215,64,0.18);border-radius:16px;padding:18px 20px;margin:18px 0;color:var(--text2)}
 .note-box strong{color:var(--yellow)}
-.brace-demo{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:stretch;margin:18px 0;background:rgba(255,255,255,.025);border:2px solid rgba(155,109,255,.18);border-radius:18px;padding:18px}
+.brace-demo{margin:18px 0;background:rgba(255,255,255,.025);border:2px solid rgba(155,109,255,.18);border-radius:18px;padding:18px}
+.brace-inside{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:stretch}
 .curly-brace{font-family:Georgia,serif;font-size:118px;line-height:.78;color:var(--purple);animation:braceGrow 1.7s ease-in-out infinite alternate;display:flex;align-items:center}
 @keyframes braceGrow{from{transform:scaleY(.82);opacity:.55}to{transform:scaleY(1);opacity:1}}
 .brace-lines{display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:16px}
 .brace-line{padding:8px 12px;border-radius:10px;background:rgba(155,109,255,.08);border:1px solid rgba(155,109,255,.18)}
-.always-line{padding:8px 12px;border-radius:10px;background:rgba(255,215,64,.07);border:1px solid rgba(255,215,64,.18)}
+.always-line{padding:8px 12px;border-radius:10px;background:rgba(255,215,64,.07);border:1px solid rgba(255,215,64,.18);font-family:var(--mono);font-size:16px;margin-top:10px}
 .error-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
 .err-card{background:rgba(255,82,82,.06);border:2px solid rgba(255,82,82,.15);border-radius:16px;padding:16px}
 .err-card h4{color:var(--red);font-size:17px;margin-bottom:6px}.err-card p{font-size:15px;margin:0;color:var(--text2)}
@@ -269,13 +271,20 @@ function hl(t){
 }
 function cS(ls){return`<div class="code">${ls.map((l,i)=>`<span class="line"><span class="ln">${i+1}</span>${hl(l||' ')}</span>`).join('\n')}</div>`}
 
+function escHTML(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function outputDemo(codeLines, output, label='Your screen will display'){
   const isError = /Error|Traceback|invalid syntax|not defined/i.test(output);
-  const value = isError ? `<span class="screen-error">${output.replace(/</g,'&lt;')}</span>` : `<span class="screen-value">${output}</span>`;
+  let value;
+  if(isError){
+    value = `<span class="screen-error">${escHTML(output)}</span>`;
+  } else {
+    const lines = String(output).split(/\n/).map(line=>`<span class="screen-line">${escHTML(line)}</span>`).join('');
+    value = `<span class="screen-value">${lines}</span>`;
+  }
   return `<div class="output-demo">${cS(codeLines)}<div class="flow-row"><div class="dotstream"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="monitor" data-label="${label}">${value}</div></div></div>`;
 }
 function explainBox(text){return `<div class="note-box"><strong>What this means:</strong> ${text}</div>`}
-function braceDemo(){return `<div class="brace-demo"><div class="curly-brace">{</div><div class="brace-lines"><div class="brace-line">print("Adult") <span style="color:var(--green)">inside the if</span></div><div class="brace-line">print("Can vote") <span style="color:var(--green)">also inside</span></div><div class="always-line">print("Done") <span style="color:var(--yellow)">outside; always runs</span></div></div></div>`}
+function braceDemo(){return `<div class="brace-demo"><div class="brace-inside"><div class="curly-brace">{</div><div class="brace-lines"><div class="brace-line">print("Adult") <span style="color:var(--green)">inside the if</span></div><div class="brace-line">print("Can vote") <span style="color:var(--green)">also inside</span></div></div></div><div class="always-line">print("Done") <span style="color:var(--yellow)">not inside the if; no indentation, so it always runs</span></div><div class="note-box"><strong>Notice:</strong> The purple bracket only includes the two indented lines. <code>print("Done")</code> is outside the bracket because it is not indented.</div></div>`}
 
 
 // ══════════════════════════════════════
